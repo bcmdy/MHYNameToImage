@@ -42,6 +42,7 @@ if (string.IsNullOrEmpty(nameArg))
 
     Console.WriteLine();
     Console.WriteLine("完成！");
+    Console.WriteLine("3秒后将自动退出...");
     Thread.Sleep(3000);
     return;
 }
