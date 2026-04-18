@@ -28,7 +28,7 @@ public class ImageGenerator
 
         var textWidth = (int)Math.Ceiling(MeasureTextWidth(name, font));
         var paddingX = 3;
-        var width = textWidth + paddingX;
+        var width = textWidth + paddingX + 2;
         var height = 28;
 
         GenerateNormalImage(name, width, height, font);
@@ -55,7 +55,7 @@ public class ImageGenerator
 
         var renderOptions = new RichTextOptions(font)
         {
-            Origin = new PointF(3, (height - (int)font.Size) / 2 - 2),
+            Origin = new PointF(2, (height - (int)font.Size) / 2 - 0),
             Dpi = 72,
         };
 
@@ -75,7 +75,7 @@ public class ImageGenerator
 
         var renderOptions = new RichTextOptions(font)
         {
-            Origin = new PointF(3, (height - (int)font.Size) / 2 - 2),
+            Origin = new PointF(3, (height - (int)font.Size) / 2 - 0),
             Dpi = 72,
         };
 
