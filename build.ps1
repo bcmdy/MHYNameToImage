@@ -1,4 +1,4 @@
-param(
+﻿param(
     [string]$Version = "1.0.0"
 )
 
@@ -12,11 +12,36 @@ Write-Host ""
 
 # Clean old files
 Write-Host "Cleaning old files..." -ForegroundColor Yellow
-if (Test-Path $OUTPUT_DIR) {
-    Remove-Item -Recurse -Force $OUTPUT_DIR
+
+# Kill process if running
+$exePath = Join-Path $OUTPUT_DIR "NameToImage.exe"
+if (Test-Path $exePath) {
+    $process = Get-Process -Name "NameToImage" -ErrorAction SilentlyContinue
+    if ($process) {
+        Stop-Process -Name "NameToImage" -Force -ErrorAction SilentlyContinue
+        Start-Sleep -Milliseconds 500
+    }
 }
-if (Test-Path "bin") {
-    Remove-Item -Recurse -Force "bin"
+
+# Retry deletion
+$retryCount = 3
+for ($i = 0; $i -lt $retryCount; $i++) {
+    try {
+        if (Test-Path $OUTPUT_DIR) {
+            Remove-Item -Recurse -Force $OUTPUT_DIR -ErrorAction Stop
+        }
+        if (Test-Path "bin") {
+            Remove-Item -Recurse -Force "bin" -ErrorAction Stop
+        }
+        break
+    } catch {
+        if ($i -lt ($retryCount - 1)) {
+            Start-Sleep -Milliseconds 500
+        } else {
+            Write-Host "[ERROR] Cannot clean output directory. Is the exe file still running?" -ForegroundColor Red
+            exit 1
+        }
+    }
 }
 
 # Build project (single file, requires .NET 8 runtime)
