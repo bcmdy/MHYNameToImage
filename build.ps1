@@ -61,26 +61,9 @@ if (Test-Path "bin") {
     Write-Host "Deleted bin directory" -ForegroundColor Yellow
 }
 
-# Compress with UPX
-$exePath = Join-Path $OUTPUT_DIR "NameToImage.exe"
-$upxPath = Join-Path $PSScriptRoot "upx.exe"
-if (Test-Path $exePath) {
-    # Download UPX if not exists
-    if (-not (Test-Path $upxPath)) {
-        Write-Host ""
-        Write-Host "Downloading UPX..." -ForegroundColor Yellow
-        try {
-            Invoke-WebRequest -Uri "https://gh.sevencdn.com/https://github.com/upx/upx/releases/download/v3.96/upx-3.96-win64.exe" -OutFile $upxPath -UseBasicParsing -TimeoutSec 60 -ErrorAction Stop
-        } catch {
-            Write-Host "[WARNING] UPX download failed, skipping compression" -ForegroundColor Yellow
-        }
-    }
-    if (Test-Path $upxPath) {
-        Write-Host ""
-        Write-Host "Compressing with UPX..." -ForegroundColor Yellow
-        & $upxPath --force -9 $exePath
-    }
-}
+# Note: UPX compression broken .NET single-file apps, disabled
+# $upxPath = Join-Path $PSScriptRoot "upx.exe"
+# if (Test-Path $upxPath) { ... }
 
 Write-Host ""
 Write-Host "========================================" -ForegroundColor Green
