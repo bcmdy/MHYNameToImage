@@ -24,3 +24,7 @@ packages/
 # OS
 Thumbs.db
 .DS_Store
+
+# Tools (not in git but keep in project)
+tools/upx.exe
+upx.exe
