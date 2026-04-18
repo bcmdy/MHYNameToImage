@@ -47,7 +47,7 @@ for ($i = 0; $i -lt $retryCount; $i++) {
 # Build project (single file, requires .NET 8 runtime)
 Write-Host ""
 Write-Host "Building project (single file)..." -ForegroundColor Yellow
-dotnet publish NameToImage.csproj -c $CONFIG -p:PublishSingleFile=true --self-contained false -p:DebugType=none -p:DebugSymbols=false -p:Version=$Version -p:AssemblyVersion=$Version -p:FileVersion=$Version -o ./$OUTPUT_DIR
+dotnet publish NameToImage.csproj -c $CONFIG -p:PublishSingleFile=true -p:PublishTrimmed=true --self-contained false -p:DebugType=none -p:DebugSymbols=false -p:Version=$Version -p:AssemblyVersion=$Version -p:FileVersion=$Version -o ./$OUTPUT_DIR
 
 if ($LASTEXITCODE -ne 0) {
     Write-Host ""
