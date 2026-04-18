@@ -9,21 +9,20 @@ namespace NameToImage;
 
 public class ImageGenerator
 {
-    public class Config
-    {
-        public string OutputDirectory { get; set; } = "output";
-    }
-
     private readonly FontFamily _fontFamily;
+    private readonly string _outputDir;
+    private readonly bool _generateMark;
 
-    public ImageGenerator(string fontPath)
+    public ImageGenerator(string fontPath, string outputDir, bool generateMark = false)
     {
         var collection = new FontCollection();
         collection.Add(fontPath);
         _fontFamily = collection.Families.First();
+        _outputDir = outputDir;
+        _generateMark = generateMark;
     }
 
-    public void GenerateImages(string name, Config config)
+    public void GenerateImages(string name)
     {
         var font = _fontFamily.CreateFont(24f, FontStyle.Regular);
 
@@ -32,10 +31,9 @@ public class ImageGenerator
         var width = textWidth + paddingX;
         var height = 28;
 
-        Directory.CreateDirectory(config.OutputDirectory);
-
         GenerateNormalImage(name, width, height, font);
-        GenerateMarkImage(name, width, height, font);
+        if (_generateMark)
+            GenerateMarkImage(name, width, height, font);
     }
 
     private float MeasureTextWidth(string text, Font font)
@@ -63,7 +61,7 @@ public class ImageGenerator
 
         img.Mutate(ctx => ctx.DrawText(renderOptions, name, Color.FromRgb(80, 87, 105)));
 
-        var outputPath = Path.Combine("output", $"{name}.png");
+        var outputPath = Path.Combine(_outputDir, $"{name}.png");
         img.SaveAsPng(outputPath);
 
         Console.WriteLine($"图片已保存到：{outputPath}");
@@ -83,7 +81,7 @@ public class ImageGenerator
 
         img.Mutate(ctx => ctx.DrawText(renderOptions, name, Color.FromRgb(100, 119, 171)));
 
-        var outputPath = Path.Combine("output", $"{name}备注.png");
+        var outputPath = Path.Combine(_outputDir, $"{name}备注.png");
         img.SaveAsPng(outputPath);
 
         Console.WriteLine($"图片已保存到：{outputPath}");

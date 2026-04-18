@@ -16,7 +16,7 @@
   <ItemGroup>
     <Content Include="Resources\HYW.ttf">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Link>Resources\HYW.ttf</Link>
+      <Link>HYW.ttf</Link>
     </Content>
   </ItemGroup>
 

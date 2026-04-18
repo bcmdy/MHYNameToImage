@@ -1,10 +1,13 @@
 using NameToImage;
 
+var inputArg = args.Length > 0 ? args[0].ToLower() : "";
+bool generateMark = inputArg.Contains("m") || inputArg.Contains("-mark");
+
 Console.WriteLine("欢迎使用账号名称转图片工具！");
 
-var fontPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Resources", "HYW.ttf");
-var generator = new ImageGenerator(fontPath);
-var config = new ImageGenerator.Config();
+var baseDir = AppDomain.CurrentDomain.BaseDirectory;
+var fontPath = Path.Combine(baseDir, "HYW.ttf");
+var generator = new ImageGenerator(fontPath, baseDir, generateMark);
 
 while (true)
 {
@@ -18,7 +21,7 @@ while (true)
         break;
 
     Console.WriteLine("\n正在生成图片...");
-    generator.GenerateImages(name, config);
+    generator.GenerateImages(name);
     Console.WriteLine("完成！");
 }
 
