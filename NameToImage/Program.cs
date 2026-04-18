@@ -16,20 +16,36 @@ for (int i = 0; i < args.Length; i++)
         nameArg = args[i];
 }
 
-var generator = new ImageGenerator(fontPath, baseDir, generateMark);
-
-// No argument - show usage
+// No argument - interactive mode
 if (string.IsNullOrEmpty(nameArg))
 {
     Console.WriteLine("账号名称转图片工具");
     Console.WriteLine();
-    Console.WriteLine("用法:");
-    Console.WriteLine("  NameToImage.exe 账号名       - 生成普通版");
-    Console.WriteLine("  NameToImage.exe 账号名 -m    - 生成普通版+备注版");
+    Console.Write("请输入账号名称: ");
+    nameArg = Console.ReadLine();
+
+    if (string.IsNullOrWhiteSpace(nameArg))
+        return;
+
+    // Parse input for -m flag
+    var parts = nameArg.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+    nameArg = parts[0];
+    if (parts.Length > 1 && (parts[1].ToLower() == "-m" || parts[1].ToLower() == "--mark"))
+        generateMark = true;
+
     Console.WriteLine();
-    Console.WriteLine("按任意键退出...");
-    Console.ReadKey(true);
+    Console.WriteLine("正在生成图片...");
+    Console.WriteLine();
+
+    var generator = new ImageGenerator(fontPath, baseDir, generateMark);
+    generator.GenerateImages(nameArg);
+
+    Console.WriteLine();
+    Console.WriteLine("完成！");
+    Thread.Sleep(3000);
     return;
 }
 
-generator.GenerateImages(nameArg);
+// Command line mode
+var generator2 = new ImageGenerator(fontPath, baseDir, generateMark);
+generator2.GenerateImages(nameArg);
