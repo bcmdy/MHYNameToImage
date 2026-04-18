@@ -91,3 +91,22 @@ Write-Host "========================================" -ForegroundColor Green
 Write-Host ""
 Write-Host "Files in output directory:" -ForegroundColor Yellow
 Get-ChildItem $OUTPUT_DIR | ForEach-Object { Write-Host "  $($_.Name)" }
+
+# Copy documentation
+Write-Host ""
+Write-Host "Copying documentation..." -ForegroundColor Yellow
+Copy-Item "README.md" -Destination $OUTPUT_DIR -ErrorAction SilentlyContinue
+Copy-Item "SPEC.md" -Destination $OUTPUT_DIR -ErrorAction SilentlyContinue
+
+# Package as zip
+Write-Host ""
+Write-Host "Packaging..." -ForegroundColor Yellow
+$zipName = "NameToImage-v$Version"
+if (Test-Path $zipName) { Remove-Item -Recurse -Force $zipName }
+New-Item -ItemType Directory -Path $zipName | Out-Null
+Copy-Item "$OUTPUT_DIR\*" -Destination $zipName -Recurse
+Compress-Archive -Path "$zipName\*" -DestinationPath "$zipName.zip" -Force
+Remove-Item -Recurse -Force $zipName
+
+Write-Host ""
+Write-Host "Package: $zipName.zip" -ForegroundColor Green
