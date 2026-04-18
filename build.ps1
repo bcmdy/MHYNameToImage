@@ -88,8 +88,8 @@ $zipName = "NameToImage-v$Version"
 if (Test-Path $zipName) { Remove-Item -Recurse -Force $zipName }
 New-Item -ItemType Directory -Path $zipName | Out-Null
 Copy-Item "$OUTPUT_DIR\*" -Destination $zipName -Recurse
-Compress-Archive -Path "$zipName\*" -DestinationPath "$zipName.zip" -Force
+Compress-Archive -Path "$zipName\*" -DestinationPath "$OUTPUT_DIR\$zipName.zip" -Force
 Remove-Item -Recurse -Force $zipName
 
 Write-Host ""
-Write-Host "Package: $zipName.zip" -ForegroundColor Green
+Write-Host "Package: $OUTPUT_DIR\$zipName.zip" -ForegroundColor Green
