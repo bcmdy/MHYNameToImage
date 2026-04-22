@@ -241,6 +241,32 @@
             document.getElementById('generateBtn').disabled = !enabled;
         }
 
+        // 直接从 CDN 加载字体，绕过 file:// 限制
+        const fontCdnUrls = [
+            'https://fastly.jsdelivr.net/gh/bcmdy/MHYNameToImage@main/Resources/HYW.ttf',
+            'https://ghfast.top/https://raw.githubusercontent.com/bcmdy/MHYNameToImage/main/Resources/HYW.ttf'
+        ];
+
+        function loadFontFromCdn() {
+            let style = document.getElementById('hyw-font-style');
+            if (!style) {
+                style = document.createElement('style');
+                style.id = 'hyw-font-style';
+                document.head.appendChild(style);
+            }
+            style.textContent = `
+                @font-face {
+                    font-family: 'HYW';
+                    src: url('${fontCdnUrls[0]}') format('truetype');
+                }
+            `;
+            console.log('CSS @font-face from CDN');
+        }
+
+        function loadFontAsStyle(fontData) {
+            loadFontFromCdn();
+        }
+
         async function tryLoadFont(url, onProgress) {
             try {
                 const response = await fetch(url);
@@ -270,11 +296,12 @@
                     pos += chunk.length;
                 }
 
-                const font = new FontFace(fontName, fontData);
-                await font.load();
-                document.fonts.add(font);
+                // 使用 CSS @font-face 方式
+                loadFontAsStyle(fontData.buffer);
+                hywFont = '24px "HYW"';
                 return fontData.buffer;
             } catch (e) {
+                console.error('Load font error:', e);
                 return null;
             }
         }
@@ -339,7 +366,10 @@
 
                 const fontData = await tryLoadFont(sortedUrls[i], onProgress);
                 if (fontData) {
+                    const font = await loadFontFaceFromData(fontData);
                     cachedFontData = fontData;
+                    hywFont = '24px "HYW"';
+                    hywFontFace = font;
                     localStorage.setItem('hyw_font_cache', arrayBufferToBase64(fontData));
                     if (showStatus) setStatus('字体缓存成功！', 'success');
                     enableGenerate(true);
@@ -376,15 +406,28 @@
             return bytes.buffer;
         }
 
+        function loadFontAsStyle(fontData) {
+            loadFontFromCdn();
+        }
+
+        async function loadFontFaceFromData(fontData) {
+            const font = new FontFace(fontName, fontData);
+            await font.load();
+            document.fonts.add(font);
+            // 同时使用 CSS @font-face 方式加载
+            loadFontAsStyle(fontData);
+            return font;
+        }
+
         async function loadFromCache() {
             const cached = localStorage.getItem('hyw_font_cache');
             if (cached) {
                 try {
                     const fontData = base64ToArrayBuffer(cached);
-                    const font = new FontFace(fontName, fontData);
-                    await font.load();
-                    document.fonts.add(font);
+                    // 使用纯 CSS @font-face 方式
+                    loadFontAsStyle(fontData);
                     cachedFontData = fontData;
+                    hywFont = '24px "HYW"';
                     setStatus('字体已从缓存加载', 'success');
                     enableGenerate(true);
                     return true;
@@ -406,18 +449,61 @@
             enableGenerate(false);
         }
 
+        let hywFont = null;
+        let hywFontFace = null;
+
         function measureText(text) {
             const canvas = document.createElement('canvas');
             const ctx = canvas.getContext('2d');
-            ctx.font = '24px "HYW", "Noto Sans SC"';
-            return ctx.measureText(text).width;
+
+            // 直接使用 HYW，不测试默认值
+            ctx.font = '24px HYW, sans-serif';
+            const width = ctx.measureText(text).width;
+            console.log('measureText width:', width);
+            return width;
         }
 
-        function generate() {
-            if (!cachedFontData) {
-                alert('请先缓存字体');
+        async function ensureFontLoaded() {
+            // 等待字体完全加载
+            await document.fonts.ready;
+            await new Promise(resolve => setTimeout(resolve, 300));
+
+            // 用 Canvas 验证字体是否可用
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+
+            // 测试多个字体名称格式
+            const formats = ['24px HYW', '24px "HYW"', '24px sans-serif'];
+            for (const fmt of formats) {
+                ctx.font = fmt;
+                const w = ctx.measureText('test').width;
+                console.log('Test font:', fmt, 'width:', w);
+            }
+
+            // 使用纯 HYW 字体
+            ctx.font = '24px HYW, sans-serif';
+            ctx.fillStyle = 'transparent';
+            ctx.fillText('test', 0, 20);
+            const metrics = ctx.measureText('test');
+            const isAvailable = metrics.width > 10;
+
+            console.log('Font metrics width:', metrics.width, 'available:', isAvailable);
+
+            if (!isAvailable) {
+                throw new Error('Font not ready');
+            }
+        }
+
+        async function generate() {
+            try {
+                await ensureFontLoaded();
+            } catch (e) {
+                alert('字体加载失败，请刷新页面重试');
                 return;
             }
+
+            // 等待字体应用到 Canvas
+            await new Promise(resolve => setTimeout(resolve, 200));
 
             const name = document.getElementById('nameInput').value.trim();
             if (!name) {
@@ -426,12 +512,15 @@
             }
 
             const useMark = document.getElementById('markCheck').checked;
-            const fontStr = '24px "HYW", "Noto Sans SC"';
+            // 直接使用 HYW 字体，不带回退
+            const fontStr = '24px HYW';
 
             const textWidth = Math.ceil(measureText(name));
             const paddingX = 3;
             const width = textWidth + paddingX;
             const height = 28;
+
+            console.log('Generating with font:', fontStr);
 
             const results = [];
 
@@ -488,11 +577,47 @@
             if (e.key === 'Enter') generate();
         });
 
+        // 强制等待 CDN 字体加载完成
+        async function waitForCdnFont() {
+            const fontUrl = fontCdnUrls[0];
+            console.log('Loading font from:', fontUrl);
+
+            // 使用 FontFace API 从 URL 加载
+            try {
+                const font = new FontFace('HYW', `url(${fontUrl})`);
+                await font.load();
+                document.fonts.add(font);
+                console.log('FontFace from CDN added');
+
+                // 等待字体完全加载
+                await document.fonts.ready;
+                await new Promise(resolve => setTimeout(resolve, 500));
+
+                return true;
+            } catch (e) {
+                console.error('Font load error:', e);
+                return false;
+            }
+        }
+
         async function init() {
             const hasCache = await loadFromCache();
             if (!hasCache) {
+                // 先用 CDN 方式加载
+                await waitForCdnFont();
                 await loadFontWithFallback(true);
             }
+
+            // 验证字体
+            await document.fonts.ready;
+            await new Promise(resolve => setTimeout(resolve, 200));
+
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            ctx.font = '24px HYW, sans-serif';
+            ctx.fillText('test', 0, 20);
+            const metrics = ctx.measureText('test');
+            console.log('Init font width:', metrics.width);
         }
 
         init();
