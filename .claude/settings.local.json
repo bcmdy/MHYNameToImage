@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(pwsh -File build.ps1)",
+      "Bash(dotnet publish *)",
+      "Bash(./NameToImage.exe 测试玩家)",
+      "Bash(./NameToImage.exe 测试玩家 -m)",
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)"
+    ]
+  }
+}
