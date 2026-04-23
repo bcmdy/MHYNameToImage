@@ -61,23 +61,19 @@ MHYNameToImage/
 ### C# 版
 
 ```powershell
-cd NameToImage-CSharp
-dotnet publish NameToImage.csproj -c Release -p:PublishSingleFile=true -o ./publish
+.\NameToImage-CSharp\build.ps1
 ```
 
 ### Go EXE 版
 
 ```bat
-cd NameToImage-Go-EXE
-go build -o NameToImage.exe main.go
+.\NameToImage-Go-EXE\build.bat
 ```
 
 ### Go WASM 版
 
 ```bat
-set GOOS=js
-set GOARCH=wasm
-go build -o main.wasm main.go
+.\NameToImage-Go-WASM\build.bat
 ```
 
 ### HTML 版
