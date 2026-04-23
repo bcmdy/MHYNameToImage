@@ -134,15 +134,14 @@ async function testSpeed(url, timeout = 5000) {
 }
 
 async function loadFromCache() {
-    // 检查是否缓存（注意：本地存储空间有限，WASM可能无法缓存）
+    // 检查字体缓存
     const fontCache = localStorage.getItem('hyy_font_cache');
     if (fontCache) {
         try {
             cachedFontData = base64ToArrayBuffer(fontCache);
-            setCacheStatus('已从缓存加载字体', 'success');
             return true;
         } catch (e) {
-            console.warn('缓存加载失败:', e.message);
+            console.warn('字体缓存加载失败:', e.message);
         }
     }
     return false;
@@ -280,24 +279,12 @@ function loadScript(url) {
 
 async function run() {
     try {
-        // 尝试从缓存加载字体
-        let fontBuf;
-        const hasCache = await loadFromCache();
+        // 从网络加载（包括WASM和字体），结果存储在全局变量
+        const result = await loadWithFallback();
+        if (!result) throw new Error('加载失败');
 
-        if (hasCache && cachedFontData) {
-            fontBuf = cachedFontData;
-            setCacheStatus('从缓存加载字体', 'success');
-        } else {
-            // 从网络加载
-            const result = await loadWithFallback();
-            if (!result) throw new Error('加载失败');
-            fontBuf = result.font;
-        }
-
-        // WASM需要每次从网络加载（文件太大无法缓存）
-        const wasmResult = await tryLoadUrl(CDN, (p) => setCacheStatus(p, 'warning'));
-        if (!wasmResult) throw new Error('WASM加载失败');
-        const wasmBin = wasmResult.wasm;
+        const wasmBin = cachedWasmData;
+        const fontBuf = cachedFontData;
 
         // 1. 加载Go运行时
         await loadScript(CDN + "/wasm_exec.js");

@@ -605,14 +605,13 @@
         }
 
         async function init() {
+            // 尝试从缓存加载，失败则从网络加载
             const hasCache = await loadFromCache();
             if (!hasCache) {
-                // 先用 CDN 方式加载
-                await waitForCdnFont();
-                await loadFontWithFallback(true);
+                // 只从CDN加载，不测速
+                await loadFontFromCdn();
             }
-
-            // 验证字体
+            // 无论缓存是否存在都使用本地缓存的字体验证
             await document.fonts.ready;
             await new Promise(resolve => setTimeout(resolve, 200));
 
