@@ -6,13 +6,11 @@ param(
 $ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 Set-Location $ScriptDir
 
-# 尝试将常见Go路径添加到PATH
+# 添加Go到PATH
 $GoPathsToCheck = @(
     "D:\Program Files\Go\bin",
     "C:\Program Files\Go\bin",
-    "C:\Go\bin",
-    "$env:USERPROFILE\AppData\Local\Programs\Go\bin",
-    "$env:LOCALAPPDATA\Programs\Go\bin"
+    "C:\Go\bin"
 )
 foreach ($path in $GoPathsToCheck) {
     if (Test-Path $path) {
@@ -33,23 +31,31 @@ Write-Host "Cleaning old files..." -ForegroundColor Yellow
 if (Test-Path $OUTPUT_DIR) {
     Remove-Item -Recurse -Force $OUTPUT_DIR
 }
+Remove-Item -Force "go.sum" -ErrorAction SilentlyContinue
 
 # Create output directory
 if (-not (Test-Path $OUTPUT_DIR)) {
     New-Item -ItemType Directory -Path $OUTPUT_DIR | Out-Null
 }
 
-# Download dependencies
+# Initialize go.mod if needed
+if (-not (Test-Path "go.mod")) {
+    Write-Host "Initializing go.mod..." -ForegroundColor Yellow
+    go mod init name-to-image-wasm
+}
+
+# Download and tidy dependencies
 Write-Host ""
-Write-Host "Downloading dependencies..." -ForegroundColor Yellow
-& go mod download
+Write-Host "Downloading and tidying dependencies..." -ForegroundColor Yellow
+go get golang.org/x/image@v0.18.0
+go mod tidy
 
 # Build for WASM
 Write-Host ""
 Write-Host "Building for WebAssembly..." -ForegroundColor Yellow
 $env:GOOS = "js"
 $env:GOARCH = "wasm"
-go build -ldflags "-s -w" -o "$OUTPUT_DIR/main.wasm" main.go
+go build -ldflags "-s -w" -o "$OUTPUT_DIR/main.wasm" .
 
 if ($LASTEXITCODE -ne 0) {
     Write-Host "[ERROR] Build failed!" -ForegroundColor Red
