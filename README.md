@@ -66,14 +66,14 @@ MHYNameToImage/
 
 ### Go EXE 版
 
-```bat
-.\NameToImage-Go-EXE\build.bat
+```powershell
+.\NameToImage-Go-EXE\build.ps1
 ```
 
 ### Go WASM 版
 
-```bat
-.\NameToImage-Go-WASM\build.bat
+```powershell
+.\NameToImage-Go-WASM\build.ps1
 ```
 
 ### HTML 版
