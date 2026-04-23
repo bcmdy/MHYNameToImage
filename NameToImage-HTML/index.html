@@ -216,16 +216,16 @@
     <script>
         const fontName = 'HYW';
         const fontUrls = [
-            'https://fastly.jsdelivr.net/gh/bcmdy/MHYNameToImage@main/Resources/HYW.ttf',
-            'https://gh.sevencdn.com/https://raw.githubusercontent.com/bcmdy/MHYNameToImage/main/Resources/HYW.ttf',
-            'https://github.com/bcmdy/MHYNameToImage/raw/refs/heads/main/Resources/HYW.ttf',
-            'https://wget.la/https://raw.githubusercontent.com/bcmdy/MHYNameToImage/main/Resources/HYW.ttf',
-            'https://hk.gh-proxy.org/https://raw.githubusercontent.com/bcmdy/MHYNameToImage/main/Resources/HYW.ttf',
-            'https://hub.glowp.xyz/https://raw.githubusercontent.com/bcmdy/MHYNameToImage/main/Resources/HYW.ttf',
-            'https://ghfast.top/https://raw.githubusercontent.com/bcmdy/MHYNameToImage/main/Resources/HYW.ttf',
-            'https://gh.catmak.name/https://raw.githubusercontent.com/bcmdy/MHYNameToImage/main/Resources/HYW.ttf',
-            'https://cdn.gh-proxy.org/https://raw.githubusercontent.com/bcmdy/MHYNameToImage/main/Resources/HYW.ttf',
-            'https://g.blfrp.cn/https://raw.githubusercontent.com/bcmdy/MHYNameToImage/main/Resources/HYW.ttf'
+            'https://fastly.jsdelivr.net/gh/bcmdy/MHYNameToImage@main/NameToImage-HTML/HYW.ttf',
+            'https://gh.sevencdn.com/https://raw.githubusercontent.com/bcmdy/MHYNameToImage/main/NameToImage-HTML/HYW.ttf',
+            'https://github.com/bcmdy/MHYNameToImage/raw/refs/heads/main/NameToImage-HTML/HYW.ttf',
+            'https://wget.la/https://raw.githubusercontent.com/bcmdy/MHYNameToImage/main/NameToImage-HTML/HYW.ttf',
+            'https://hk.gh-proxy.org/https://raw.githubusercontent.com/bcmdy/MHYNameToImage/main/NameToImage-HTML/HYW.ttf',
+            'https://hub.glowp.xyz/https://raw.githubusercontent.com/bcmdy/MHYNameToImage/main/NameToImage-HTML/HYW.ttf',
+            'https://ghfast.top/https://raw.githubusercontent.com/bcmdy/MHYNameToImage/main/NameToImage-HTML/HYW.ttf',
+            'https://gh.catmak.name/https://raw.githubusercontent.com/bcmdy/MHYNameToImage/main/NameToImage-HTML/HYW.ttf',
+            'https://cdn.gh-proxy.org/https://raw.githubusercontent.com/bcmdy/MHYNameToImage/main/NameToImage-HTML/HYW.ttf',
+            'https://g.blfrp.cn/https://raw.githubusercontent.com/bcmdy/MHYNameToImage/main/NameToImage-HTML/HYW.ttf'
         ];
 
         let cachedFontData = null;
@@ -243,8 +243,8 @@
 
         // 直接从 CDN 加载字体，绕过 file:// 限制
         const fontCdnUrls = [
-            'https://fastly.jsdelivr.net/gh/bcmdy/MHYNameToImage@main/Resources/HYW.ttf',
-            'https://ghfast.top/https://raw.githubusercontent.com/bcmdy/MHYNameToImage/main/Resources/HYW.ttf'
+            'https://fastly.jsdelivr.net/gh/bcmdy/MHYNameToImage@main/NameToImage-HTML/HYW.ttf',
+            'https://ghfast.top/https://raw.githubusercontent.com/bcmdy/MHYNameToImage/main/NameToImage-HTML/HYW.ttf'
         ];
 
         function loadFontFromCdn() {
@@ -370,8 +370,12 @@
                     cachedFontData = fontData;
                     hywFont = '24px "HYW"';
                     hywFontFace = font;
-                    localStorage.setItem('hyw_font_cache', arrayBufferToBase64(fontData));
-                    if (showStatus) setStatus('字体缓存成功！', 'success');
+                    try {
+                        localStorage.setItem('hyw_font_cache', arrayBufferToBase64(fontData));
+                        if (showStatus) setStatus('字体缓存成功！', 'success');
+                    } catch(e) {
+                        if (showStatus) setStatus('加载成功 (本地存储空间不足，跳过缓存)', 'warning');
+                    }
                     enableGenerate(true);
                     return true;
                 }
