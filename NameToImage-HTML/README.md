@@ -38,8 +38,25 @@ npx http-server -p 8080
 
 ```
 NameToImage-HTML/
-├── index.html
+├── index.html      # 完整版（多线路、缓存、测速）
+├── index2.html    # 简洁版（使用opentype.js）
 ├── HYW.ttf
 ├── README.md
 └── SPEC.md
 ```
+
+## 版本说明
+
+### index.html - 完整版
+- 使用 Canvas API 的 `fillText` 方法渲染文字
+- 多 CDN 线路选择（10条线路）
+- 字体本地缓存
+- 测速选择最优线路
+- 支持清除缓存
+
+### index2.html - 简洁版
+- 使用 **opentype.js** 库解析字体，获取字形路径
+- 通过 Path 命令绘制（moveTo/lineTo/quadraticCurveTo 等）
+- 代码更简洁，约193行
+- 字体从 jsdelivr CDN 加载
+- 与 EXE/WASM 版本位置公式一致：`y = (height + fontSize) / 2 - 4`
