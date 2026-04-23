@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>原神ID生成图片</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'HYW', 'Noto Sans SC', sans-serif;
+            background: #f5f6f7;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        h1 {
+            text-align: center;
+            color: #323a45;
+            margin-bottom: 30px;
+        }
+        .input-group {
+            background: #fff;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            margin-bottom: 20px;
+        }
+        .input-row {
+            display: flex;
+            gap: 10px;
+        }
+        input[type="text"] {
+            flex: 1;
+            padding: 12px 16px;
+            border: 1px solid #dfe1e6;
+            border-radius: 6px;
+            font-size: 16px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        input[type="text"]:focus {
+            border-color: #647491;
+        }
+        button {
+            padding: 12px 24px;
+            background: #647491;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        button:hover {
+            background: #505d7a;
+        }
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        .options {
+            margin-top: 15px;
+            display: flex;
+            gap: 20px;
+        }
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            color: #505d7a;
+        }
+        .checkbox-label input {
+            width: 18px;
+            height: 18px;
+            accent-color: #647491;
+        }
+        .font-status {
+            margin-top: 15px;
+            padding: 10px 15px;
+            border-radius: 6px;
+            font-size: 14px;
+            display: none;
+        }
+        .font-status.success {
+            display: block;
+            background: #d4edda;
+            color: #155724;
+        }
+        .font-status.fail {
+            display: block;
+            background: #f8d7da;
+            color: #721c24;
+        }
+        .font-status.loading {
+            display: block;
+            background: #fff3cd;
+            color: #856404;
+        }
+        .cache-section {
+            margin-top: 15px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 6px;
+        }
+        .cache-section h4 {
+            margin-bottom: 10px;
+            color: #505d7a;
+        }
+        .cache-controls {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .cache-btn {
+            padding: 8px 16px;
+            font-size: 14px;
+        }
+                .preview {
+            background: #fff;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+        .preview h3 {
+            color: #505d7a;
+            margin-bottom: 15px;
+        }
+        .preview-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        .preview-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+        .preview-item img {
+            max-width: 100%;
+            height: auto;
+        }
+        .preview-item span {
+            font-size: 12px;
+            color: #888;
+        }
+        .download-btn {
+            display: inline-block;
+            padding: 8px 16px;
+            background: #f5f6f7;
+            color: #505d7a;
+            border: 1px solid #dfe1e6;
+            border-radius: 4px;
+            font-size: 14px;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+        .download-btn:hover {
+            background: #647491;
+            color: #fff;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>原神ID生成图片</h1>
+        <div class="input-group">
+            <div class="input-row">
+                <input type="text" id="nameInput" placeholder="请输入游戏ID名称" maxlength="12" disabled>
+                <button onclick="generate()" id="generateBtn" disabled>生成</button>
+            </div>
+            <div class="options">
+                <label class="checkbox-label">
+                    <input type="checkbox" id="markCheck" checked>
+                    生成备注版
+                </label>
+            </div>
+            <div class="font-status" id="fontStatus"></div>
+            <div class="cache-section">
+                <h4>字体缓存设置</h4>
+                <div class="cache-controls">
+                    <button class="cache-btn" onclick="manualCache()">手动缓存字体</button>
+                    <select id="urlSelect" style="padding:8px;font-size:14px;">
+                        <option value="0">线路1</option>
+                        <option value="1">线路2</option>
+                        <option value="2">线路3</option>
+                        <option value="3">线路4</option>
+                        <option value="4">线路5</option>
+                        <option value="5">线路6</option>
+                        <option value="6">线路7</option>
+                        <option value="7">线路8</option>
+                        <option value="8">线路9</option>
+                        <option value="9" selected>全部轮询</option>
+                    </select>
+                    <button class="cache-btn" onclick="clearCache()">清除缓存</button>
+                                    </div>
+            </div>
+        </div>
+        <div class="preview" id="previewSection" style="display:none;">
+            <h3>预览</h3>
+            <div class="preview-list" id="previewList"></div>
+        </div>
+    </div>
+
+    <script>
+        const fontName = 'HYW';
+        const fontUrls = [
+            'https://fastly.jsdelivr.net/gh/bcmdy/MHYNameToImage@main/Resources/HYW.ttf',
+            'https://gh.sevencdn.com/https://raw.githubusercontent.com/bcmdy/MHYNameToImage/main/Resources/HYW.ttf',
+            'https://github.com/bcmdy/MHYNameToImage/raw/refs/heads/main/Resources/HYW.ttf',
+            'https://wget.la/https://raw.githubusercontent.com/bcmdy/MHYNameToImage/main/Resources/HYW.ttf',
+            'https://hk.gh-proxy.org/https://raw.githubusercontent.com/bcmdy/MHYNameToImage/main/Resources/HYW.ttf',
+            'https://hub.glowp.xyz/https://raw.githubusercontent.com/bcmdy/MHYNameToImage/main/Resources/HYW.ttf',
+            'https://ghfast.top/https://raw.githubusercontent.com/bcmdy/MHYNameToImage/main/Resources/HYW.ttf',
+            'https://gh.catmak.name/https://raw.githubusercontent.com/bcmdy/MHYNameToImage/main/Resources/HYW.ttf',
+            'https://cdn.gh-proxy.org/https://raw.githubusercontent.com/bcmdy/MHYNameToImage/main/Resources/HYW.ttf',
+            'https://g.blfrp.cn/https://raw.githubusercontent.com/bcmdy/MHYNameToImage/main/Resources/HYW.ttf'
+        ];
+
+        let cachedFontData = null;
+
+        function setStatus(msg, type) {
+            const el = document.getElementById('fontStatus');
+            el.className = 'font-status ' + type;
+            el.textContent = msg;
+        }
+
+        function enableGenerate(enabled) {
+            document.getElementById('nameInput').disabled = !enabled;
+            document.getElementById('generateBtn').disabled = !enabled;
+        }
+
+        // 直接从 CDN 加载字体，绕过 file:// 限制
+        const fontCdnUrls = [
+            'https://fastly.jsdelivr.net/gh/bcmdy/MHYNameToImage@main/Resources/HYW.ttf',
+            'https://ghfast.top/https://raw.githubusercontent.com/bcmdy/MHYNameToImage/main/Resources/HYW.ttf'
+        ];
+
+        function loadFontFromCdn() {
+            let style = document.getElementById('hyw-font-style');
+            if (!style) {
+                style = document.createElement('style');
+                style.id = 'hyw-font-style';
+                document.head.appendChild(style);
+            }
+            style.textContent = `
+                @font-face {
+                    font-family: 'HYW';
+                    src: url('${fontCdnUrls[0]}') format('truetype');
+                }
+            `;
+            console.log('CSS @font-face from CDN');
+        }
+
+        function loadFontAsStyle(fontData) {
+            loadFontFromCdn();
+        }
+
+        async function tryLoadFont(url, onProgress) {
+            try {
+                const response = await fetch(url);
+                if (!response.ok) throw new Error('HTTP ' + response.status);
+                const contentLength = response.headers.get('content-length');
+                const total = contentLength ? parseInt(contentLength) : 0;
+
+                const reader = response.body.getReader();
+                const chunks = [];
+                let received = 0;
+
+                while (true) {
+                    const { done, value } = await reader.read();
+                    if (done) break;
+                    chunks.push(value);
+                    received += value.length;
+                    if (onProgress && total > 0) {
+                        const percent = Math.round((received / total) * 100);
+                        onProgress(percent, received, total);
+                    }
+                }
+
+                const fontData = new Uint8Array(received);
+                let pos = 0;
+                for (const chunk of chunks) {
+                    fontData.set(chunk, pos);
+                    pos += chunk.length;
+                }
+
+                // 使用 CSS @font-face 方式
+                loadFontAsStyle(fontData.buffer);
+                hywFont = '24px "HYW"';
+                return fontData.buffer;
+            } catch (e) {
+                console.error('Load font error:', e);
+                return null;
+            }
+        }
+
+        async function testSpeed(url, timeout = 5000) {
+            const start = performance.now();
+            try {
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), timeout);
+                const response = await fetch(url, { signal: controller.signal });
+                clearTimeout(timeoutId);
+                if (!response.ok) return Infinity;
+                await response.arrayBuffer();
+                return performance.now() - start;
+            } catch (e) {
+                return Infinity;
+            }
+        }
+
+        async function loadFontWithFallback(showStatus = true) {
+            const urlSelect = document.getElementById('urlSelect');
+            const selectedIndex = parseInt(urlSelect.value);
+            let urlsToTry = selectedIndex < fontUrls.length ? [fontUrls[selectedIndex]] : [...fontUrls];
+
+            if (showStatus) setStatus('正在测速中...', 'loading');
+
+            // jsdelivr 固定第一，其他按测速排序
+            const jsdelivrUrl = urlsToTry.find(u => u.includes('jsdelivr'));
+            let sortedUrls = [];
+
+            if (jsdelivrUrl) {
+                // jsdelivr 放第一
+                sortedUrls.push(jsdelivrUrl);
+                const otherUrls = urlsToTry.filter(u => u !== jsdelivrUrl);
+                if (otherUrls.length > 0) {
+                    if (showStatus) setStatus('正在测速其他线路...', 'loading');
+                    const speeds = await Promise.all(otherUrls.map(async url => {
+                        const time = await testSpeed(url);
+                        return { url, time };
+                    }));
+                    speeds.sort((a, b) => a.time - b.time);
+                    sortedUrls = sortedUrls.concat(speeds.map(s => s.url));
+                }
+            } else {
+                const speeds = await Promise.all(urlsToTry.map(async url => {
+                    const time = await testSpeed(url);
+                    return { url, time };
+                }));
+                speeds.sort((a, b) => a.time - b.time);
+                sortedUrls = speeds.map(s => s.url);
+            }
+
+            if (showStatus) setStatus(`测速完成，按速度排序`, 'loading');
+
+            for (let i = 0; i < sortedUrls.length; i++) {
+                if (showStatus) setStatus(`下载中 ${i + 1}/${sortedUrls.length}...`, 'loading');
+
+                const onProgress = showStatus ? (percent, received, total) => {
+                    const sizeStr = formatSize(received) + ' / ' + formatSize(total);
+                    setStatus(`下载中: ${percent}% (${sizeStr})`, 'loading');
+                } : null;
+
+                const fontData = await tryLoadFont(sortedUrls[i], onProgress);
+                if (fontData) {
+                    const font = await loadFontFaceFromData(fontData);
+                    cachedFontData = fontData;
+                    hywFont = '24px "HYW"';
+                    hywFontFace = font;
+                    localStorage.setItem('hyw_font_cache', arrayBufferToBase64(fontData));
+                    if (showStatus) setStatus('字体缓存成功！', 'success');
+                    enableGenerate(true);
+                    return true;
+                }
+            }
+
+            if (showStatus) setStatus('字体缓存失败，请检查网络后重试', 'fail');
+            enableGenerate(false);
+            return false;
+        }
+
+        function formatSize(bytes) {
+            if (bytes < 1024) return bytes + 'B';
+            if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + 'KB';
+            return (bytes / (1024 * 1024)).toFixed(2) + 'MB';
+        }
+
+        function arrayBufferToBase64(buffer) {
+            let binary = '';
+            const bytes = new Uint8Array(buffer);
+            for (let i = 0; i < bytes.byteLength; i++) {
+                binary += String.fromCharCode(bytes[i]);
+            }
+            return btoa(binary);
+        }
+
+        function base64ToArrayBuffer(base64) {
+            const binary = atob(base64);
+            const bytes = new Uint8Array(binary.length);
+            for (let i = 0; i < binary.length; i++) {
+                bytes[i] = binary.charCodeAt(i);
+            }
+            return bytes.buffer;
+        }
+
+        function loadFontAsStyle(fontData) {
+            loadFontFromCdn();
+        }
+
+        async function loadFontFaceFromData(fontData) {
+            const font = new FontFace(fontName, fontData);
+            await font.load();
+            document.fonts.add(font);
+            // 同时使用 CSS @font-face 方式加载
+            loadFontAsStyle(fontData);
+            return font;
+        }
+
+        async function loadFromCache() {
+            const cached = localStorage.getItem('hyw_font_cache');
+            if (cached) {
+                try {
+                    const fontData = base64ToArrayBuffer(cached);
+                    // 使用纯 CSS @font-face 方式
+                    loadFontAsStyle(fontData);
+                    cachedFontData = fontData;
+                    hywFont = '24px "HYW"';
+                    setStatus('字体已从缓存加载', 'success');
+                    enableGenerate(true);
+                    return true;
+                } catch (e) {
+                    console.warn('缓存加载失败:', e.message);
+                }
+            }
+            return false;
+        }
+
+        async function manualCache() {
+            await loadFontWithFallback(true);
+        }
+
+        async function clearCache() {
+            localStorage.removeItem('hyw_font_cache');
+            cachedFontData = null;
+            setStatus('缓存已清除', 'fail');
+            enableGenerate(false);
+        }
+
+        let hywFont = null;
+        let hywFontFace = null;
+
+        function measureText(text) {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+
+            // 直接使用 HYW，不测试默认值
+            ctx.font = '24px HYW, sans-serif';
+            const width = ctx.measureText(text).width;
+            console.log('measureText width:', width);
+            return width;
+        }
+
+        async function ensureFontLoaded() {
+            // 等待字体完全加载
+            await document.fonts.ready;
+            await new Promise(resolve => setTimeout(resolve, 300));
+
+            // 用 Canvas 验证字体是否可用
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+
+            // 测试多个字体名称格式
+            const formats = ['24px HYW', '24px "HYW"', '24px sans-serif'];
+            for (const fmt of formats) {
+                ctx.font = fmt;
+                const w = ctx.measureText('test').width;
+                console.log('Test font:', fmt, 'width:', w);
+            }
+
+            // 使用纯 HYW 字体
+            ctx.font = '24px HYW, sans-serif';
+            ctx.fillStyle = 'transparent';
+            ctx.fillText('test', 0, 20);
+            const metrics = ctx.measureText('test');
+            const isAvailable = metrics.width > 10;
+
+            console.log('Font metrics width:', metrics.width, 'available:', isAvailable);
+
+            if (!isAvailable) {
+                throw new Error('Font not ready');
+            }
+        }
+
+        async function generate() {
+            try {
+                await ensureFontLoaded();
+            } catch (e) {
+                alert('字体加载失败，请刷新页面重试');
+                return;
+            }
+
+            // 等待字体应用到 Canvas
+            await new Promise(resolve => setTimeout(resolve, 200));
+
+            const name = document.getElementById('nameInput').value.trim();
+            if (!name) {
+                alert('请输入ID名称');
+                return;
+            }
+
+            const useMark = document.getElementById('markCheck').checked;
+            // 直接使用 HYW 字体，不带回退
+            const fontStr = '24px HYW';
+
+            const textWidth = Math.ceil(measureText(name));
+            const paddingX = 3;
+            const width = textWidth + paddingX;
+            const height = 28;
+
+            console.log('Generating with font:', fontStr);
+
+            const results = [];
+
+            const canvas1 = document.createElement('canvas');
+            canvas1.width = width;
+            canvas1.height = height;
+            const ctx1 = canvas1.getContext('2d');
+            ctx1.fillStyle = 'rgb(245, 246, 247)';
+            ctx1.fillRect(0, 0, width, height);
+            ctx1.font = fontStr;
+            ctx1.fillStyle = 'rgb(80, 87, 105)';
+            ctx1.textBaseline = 'middle';
+            ctx1.fillText(name, 2, height / 2);
+            results.push({ name: name, canvas: canvas1 });
+
+            if (useMark) {
+                const canvas2 = document.createElement('canvas');
+                canvas2.width = width;
+                canvas2.height = height;
+                const ctx2 = canvas2.getContext('2d');
+                ctx2.fillStyle = 'rgb(245, 246, 247)';
+                ctx2.fillRect(0, 0, width, height);
+                ctx2.font = fontStr;
+                ctx2.fillStyle = 'rgb(100, 119, 171)';
+                ctx2.textBaseline = 'middle';
+                ctx2.fillText(name, 3, height / 2);
+                results.push({ name: name + '备注', canvas: canvas2 });
+            }
+
+            renderResults(results);
+        }
+
+        function renderResults(results) {
+            const previewSection = document.getElementById('previewSection');
+            const previewList = document.getElementById('previewList');
+            previewList.innerHTML = '';
+
+            results.forEach(item => {
+                const dataUrl = item.canvas.toDataURL('image/png');
+                const div = document.createElement('div');
+                div.className = 'preview-item';
+                div.innerHTML = `
+                    <img src="${dataUrl}" alt="${item.name}">
+                    <span>${item.name}</span>
+                    <a href="${dataUrl}" download="${item.name}.png" class="download-btn">下载</a>
+                `;
+                previewList.appendChild(div);
+            });
+
+            previewSection.style.display = 'block';
+        }
+
+        document.getElementById('nameInput').addEventListener('keypress', e => {
+            if (e.key === 'Enter') generate();
+        });
+
+        // 强制等待 CDN 字体加载完成
+        async function waitForCdnFont() {
+            const fontUrl = fontCdnUrls[0];
+            console.log('Loading font from:', fontUrl);
+
+            // 使用 FontFace API 从 URL 加载
+            try {
+                const font = new FontFace('HYW', `url(${fontUrl})`);
+                await font.load();
+                document.fonts.add(font);
+                console.log('FontFace from CDN added');
+
+                // 等待字体完全加载
+                await document.fonts.ready;
+                await new Promise(resolve => setTimeout(resolve, 500));
+
+                return true;
+            } catch (e) {
+                console.error('Font load error:', e);
+                return false;
+            }
+        }
+
+        async function init() {
+            const hasCache = await loadFromCache();
+            if (!hasCache) {
+                // 先用 CDN 方式加载
+                await waitForCdnFont();
+                await loadFontWithFallback(true);
+            }
+
+            // 验证字体
+            await document.fonts.ready;
+            await new Promise(resolve => setTimeout(resolve, 200));
+
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            ctx.font = '24px HYW, sans-serif';
+            ctx.fillText('test', 0, 20);
+            const metrics = ctx.measureText('test');
+            console.log('Init font width:', metrics.width);
+        }
+
+        init();
+    </script>
+</body>
+</html>

@@ -1,55 +1,54 @@
-# 账号名称转图片工具
+# NameToImage - 原神账号名称转图片工具
 
-原神账号名称生成PNG图片工具。
+这是一个将游戏账号名称转换为 PNG 图片的工具，主要服务于原神玩家。
 
-## 使用方式
+## 项目概述
 
-### 交互模式（双击运行）
+本项目提供了三种不同技术栈的实现方式，用于生成带有账号名称的 PNG 图片。图片采用与游戏内相同的字体和配色确保生成的名片图片与游戏风格一致。
 
-直接双击运行 exe，提示输入账号名，生成后3秒自动退出。
+## 技术实现
 
-```powershell
-NameToImage.exe
-```
+### NameToImage-CSharp（命令行工具）
 
-### 命令行模式
+基于 .NET 8.0 开发的命令行工具，支持 Windows 平台。通过 SixLabors.ImageSharp 库处理图片生成，适合需要本地快速生成图片的用户。
 
-```powershell
-# 生成普通版
-NameToImage.exe 账号名
+技术栈：.NET 8.0 | C# | SixLabors.ImageSharp
 
-# 生成普通版 + 备注版
-NameToImage.exe 账号名 -m
-```
+### NameToImage-Go（WebAssembly）
 
-## 输出
+基于 Go 语言编译的 WebAssembly 版本，可直接在浏览器中运行。通过 golang.org/x/image 相关包实现图片处理，适合集成到 Web 应用中。
 
-图片保存在 exe 同目录下：
-- `账号名.png` - 普通版，文字颜色 RGB(80,87,105)
-- `账号名备注.png` - 备注版，文字颜色 RGB(100,119,171)（仅 `-m` 参数）
+技术栈：Go | WebAssembly
+
+### NameToImage-HTML（在线工具）
+
+纯前端实现的在线工具，无需后端服务，直接在浏览器中运行。使用 Canvas API 进行图片绘制，提供便捷的在线生成体验。
+
+技术栈：HTML5 | JavaScript | Canvas API
 
 ## 图片规格
 
+所有版本生成的图片遵循统一的规格标准：
+
 | 属性 | 普通版 | 备注版 |
 |------|--------|--------|
-| 文字颜色 | RGB(80,87,105) | RGB(100,119,171) |
-| 背景颜色 | RGB(245,246,247) | RGB(245,246,247) |
-| 高度 | 28px | 28px |
+| 文字颜色 | RGB(80, 87, 105) | RGB(100, 119, 171) |
+| 背景颜色 | RGB(245, 246, 247) | RGB(245, 246, 247) |
+| 图片高度 | 28px | 28px |
+| 图片宽度 | 自适应 | 自适应 |
 | 字体 | 华文行楷 24px | 华文行楷 24px |
 
-## 环境要求
+## 目录结构
 
-- Windows
-- .NET 8 Desktop Runtime
-
-## 打包
-
-```powershell
-.\build.ps1
+```
+NameToImage/
+├── NameToImage-CSharp/   # C# 版 (.NET 8.0)
+├── NameToImage-Go/     # Go 版 (WebAssembly)
+├── NameToImage-HTML/   # HTML 版
+├── README.md
+└── SPEC.md
 ```
 
-清理：
+## 相关文档
 
-```powershell
-.\clean.ps1
-```
+各版本的详细需求文档和使用说明请参见对应子项目的 README.md 文件。
