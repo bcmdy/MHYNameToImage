@@ -55,7 +55,7 @@ go mod tidy
 # Build for Windows
 Write-Host ""
 Write-Host "Building for Windows..." -ForegroundColor Yellow
-go build -ldflags "-s -w -buildvcs=false" -trimpath -o "$OUTPUT_DIR/NameToImage.exe" .
+go build -ldflags "-s -w" -trimpath -o "$OUTPUT_DIR/NameToImage.exe" .
 
 if ($LASTEXITCODE -ne 0) {
     Write-Host "[ERROR] Build failed!" -ForegroundColor Red
