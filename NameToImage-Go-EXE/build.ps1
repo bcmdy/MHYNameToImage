@@ -4,6 +4,7 @@ param(
 
 # 获取脚本所在目录并切换到该目录
 $ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
+$OriginalDir = Get-Location
 Set-Location $ScriptDir
 
 # 添加Go到PATH
@@ -86,3 +87,6 @@ Remove-Item -Recurse -Force $zipName
 
 Write-Host ""
 Write-Host "Package: $OUTPUT_DIR/$zipName.zip" -ForegroundColor Green
+
+# 恢复原来目录
+Set-Location $OriginalDir

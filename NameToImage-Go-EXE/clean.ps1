@@ -1,5 +1,6 @@
 # 获取脚本所在目录并切换到该目录
 $ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
+$OriginalDir = Get-Location
 Set-Location $ScriptDir
 
 Write-Host "========================================" -ForegroundColor Cyan
@@ -22,3 +23,6 @@ Write-Host ""
 Write-Host "========================================" -ForegroundColor Green
 Write-Host "Clean completed!" -ForegroundColor Green
 Write-Host "========================================" -ForegroundColor Green
+
+# 恢复原来目录
+Set-Location $OriginalDir
