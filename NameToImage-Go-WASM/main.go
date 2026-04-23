@@ -2,9 +2,7 @@ package main
 
 import (
 	"bytes"
-	"context"
 	"encoding/base64"
-	"encoding/binary"
 	"golang.org/x/image/draw"
 	"golang.org/x/image/font"
 	"golang.org/x/image/font/opentype"
@@ -16,9 +14,9 @@ import (
 )
 
 var (
-	fontFace     font.Face
-	fontLoaded  bool
-	fontBytes   []byte
+	fontFace    font.Face
+	fontLoaded bool
+	fontBytes  []byte
 )
 
 func main() {
@@ -29,26 +27,25 @@ func main() {
 	<-make(chan struct{})
 }
 
-func loadFont(ctx context.Context, args []js.Value) interface{} {
+func loadFont(this js.Value, args []js.Value) any {
 	fontData := args[0]
 	if fontData.IsUndefined() || fontData.IsNull() {
-		return map[string]interface{}{"error": "no font data"}
+		return map[string]any{"error": "no font data"}
 	}
 
-	// 创建 Uint8Array 并复制到 Go
 	fontDataLen := fontData.Length()
 	if fontDataLen == 0 {
-		return map[string]interface{}{"error": "font data empty"}
+		return map[string]any{"error": "font data empty"}
 	}
 
 	fontBytes = make([]byte, fontDataLen)
 	js.CopyBytesToGo(fontBytes, fontData)
 
-	fontLoaded = false // 标记需要重新解析
-	return map[string]interface{}{"status": "loaded", "size": fontDataLen}
+	fontLoaded = false
+	return map[string]any{"status": "loaded", "size": fontDataLen}
 }
 
-func generateImage(ctx context.Context, args []js.Value) interface{} {
+func generateImage(this js.Value, args []js.Value) any {
 	name := args[0].String()
 	generateMark := false
 	if len(args) > 1 {
@@ -56,23 +53,22 @@ func generateImage(ctx context.Context, args []js.Value) interface{} {
 	}
 
 	if len(name) == 0 {
-		return map[string]interface{}{"error": "name is empty"}
+		return map[string]any{"error": "name is empty"}
 	}
 
 	if fontBytes == nil {
-		return map[string]interface{}{"error": "font not loaded"}
+		return map[string]any{"error": "font not loaded"}
 	}
 
-	// 解析字体（只需要一次）
 	if fontFace == nil || !fontLoaded {
 		collection, err := opentype.ParseCollection(fontBytes)
 		if err != nil {
-			return map[string]interface{}{"error": err.Error()}
+			return map[string]any{"error": err.Error()}
 		}
 
 		tt, err := collection.Font(0)
 		if err != nil {
-			return map[string]interface{}{"error": err.Error()}
+			return map[string]any{"error": err.Error()}
 		}
 
 		face, err := opentype.NewFace(tt, &opentype.FaceOptions{
@@ -81,20 +77,18 @@ func generateImage(ctx context.Context, args []js.Value) interface{} {
 			Hinting: font.HintingFull,
 		})
 		if err != nil {
-			return map[string]interface{}{"error": err.Error()}
+			return map[string]any{"error": err.Error()}
 		}
 		fontFace = face
 		fontLoaded = true
 	}
 
-	result := make(map[string]interface{})
+	result := make(map[string]any)
 
-	// 普通版 (RGB 80, 87, 105)
 	img := createImage(name, [3]uint8{80, 87, 105}, 2)
 	result["image"] = imgToDataURL(img)
 
 	if generateMark {
-		// 备注版 (RGB 100, 119, 171)
 		imgM := createImage(name, [3]uint8{100, 119, 171}, 3)
 		result["imageMark"] = imgToDataURL(imgM)
 	}
