@@ -97,25 +97,27 @@ func generateImage(this js.Value, args []js.Value) any {
 }
 
 func createImage(name string, textColor [3]uint8, originX int) image.Image {
+	// 计算宽度
 	dummyImg := image.NewRGBA(image.Rect(0, 0, 1, 1))
 	d := &font.Drawer{
 		Dst:  dummyImg,
-		Src:  image.NewUniform(color.RGBA{textColor[0], textColor[1], textColor[2], 255}),
 		Face: fontFace,
 	}
 	textWidth := d.MeasureString(name).Round()
 
 	paddingX := 3
-	width := textWidth + paddingX + 2
+	width := textWidth + paddingX
 	height := 28
 
 	img := image.NewRGBA(image.Rect(0, 0, width, height))
 	bg := color.RGBA{245, 246, 247, 255}
 	draw.Draw(img, img.Bounds(), &image.Uniform{bg}, image.Point{}, draw.Src)
 
+	// 使用与HTML版本相同的定位：textBaseline='middle', y=height/2
 	d.Dst = img
-	y := (height + int(fontFace.Metrics().Height.Round())) / 2
-	d.Dot = fixed.P(originX, y)
+	d.Src = image.NewUniform(color.RGBA{textColor[0], textColor[1], textColor[2], 255})
+	// y = height/2 对应中间位置
+	d.Dot = fixed.P(originX, height*64/2) // 14 in 26.6 fixed point format
 	d.DrawString(name)
 
 	return img
