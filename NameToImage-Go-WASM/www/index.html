@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>NameToImage WASM</title>
+<title>原神ID生成图片 - WASM版</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:'Microsoft YaHei',sans-serif;background:#f5f6f7;padding:20px}
@@ -12,113 +12,365 @@ h1{text-align:center;color:#323a45;margin-bottom:30px}
 .card{background:#fff;border-radius:8px;padding:20px;box-shadow:0 2px 8px rgba(0,0,0,0.06);margin-bottom:20px}
 label{display:block;margin-bottom:8px;color:#323a45;font-weight:500}
 input[type="text"]{width:100%;padding:12px 16px;border:1px solid #dfe1e6;border-radius:6px;font-size:16px;margin-bottom:15px}
+input[type="text"]:focus{border-color:#647491;outline:none}
 .checkbox-group{margin-bottom:15px}
 .checkbox-group label{display:flex;align-items:center;font-weight:normal;cursor:pointer}
 .checkbox-group input{margin-right:8px}
-button{width:100%;padding:12px;background:#4c6ef5;color:#fff;border:none;border-radius:6px;font-size:16px;cursor:pointer}
+button{width:100%;padding:12px;background:#647491;color:#fff;border:none;border-radius:6px;font-size:16px;cursor:pointer}
+button:hover{background:#505d7a}
 button:disabled{background:#a2a2a2;cursor:not-allowed}
 .result-item{margin-bottom:15px}
 .result-item label{margin-bottom:5px;font-size:14px}
 .result-item img{max-width:100%;border:1px solid #dfe1e6;border-radius:4px}
 .error{color:#dc3545;padding:10px;background:#f8d7da;border-radius:4px}
+.success{color:#155724;padding:10px;background:#d4edda;border-radius:4px}
+.warning{color:#856404;padding:10px;background:#fff3cd;border-radius:4px}
+.cache-section{margin-top:15px;padding:15px;background:#f8f9fa;border-radius:6px}
+.cache-section h4{margin-bottom:10px;color:#505d7a}
+.cache-controls{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.cache-btn{padding:8px 16px;font-size:14px;width:auto}
+.cache-status{font-size:12px;color:#666;margin-top:8px}
+.download-btn{display:inline-block;padding:8px 16px;background:#f5f6f7;color:#505d7a;border:1px solid #dfe1e6;border-radius:4px;font-size:14px;text-decoration:none;margin-top:8px}
+.download-btn:hover{background:#647491;color:#fff}
 </style>
 </head>
 <body>
 <div class="container">
-<h1>NameToImage WASM</h1>
+<h1>原神ID生成图片</h1>
 <div class="card">
-<label for="name">Account Name</label>
-<input type="text" id="name" placeholder="Enter name">
+<label for="name">游戏ID名称</label>
+<input type="text" id="name" placeholder="请输入游戏ID名称" maxlength="12">
 <div class="checkbox-group">
-<label><input type="checkbox" id="mark"> Generate Mark</label>
+<label><input type="checkbox" id="mark" checked> 生成备注版</label>
 </div>
-<button id="generate" disabled>Loading...</button>
+<button id="generate" disabled>加载中...</button>
 </div>
+
 <div class="card" id="result"></div>
+
+<div class="card cache-section">
+<h4>线路设置</h4>
+<div class="cache-controls">
+<select id="urlSelect" style="padding:8px;font-size:14px;border:1px solid #dfe1e6;border-radius:4px;">
+<option value="0">线路1 (jsdelivr)</option>
+<option value="1">线路2</option>
+<option value="2">线路3</option>
+<option value="3">线路4</option>
+<option value="4">线路5</option>
+<option value="5">线路6</option>
+<option value="6">线路7</option>
+<option value="7">线路8</option>
+<option value="8">线路9</option>
+<option value="9" selected>全部轮询</option>
+</select>
+<button class="cache-btn" onclick="clearCache()">清除缓存</button>
+</div>
+<div class="cache-status" id="cacheStatus"></div>
+</div>
 </div>
 
 <script>
-// 动态加载脚本
-const CDN = "https://cdn.jsdelivr.net/gh/bcmdy/MHYNameToImage@main/NameToImage-Go-WASM/www";
+// 多线路配置
+const cdnUrls = [
+    'https://fastly.jsdelivr.net/gh/bcmdy/MHYNameToImage@main/NameToImage-Go-WASM/www',
+    'https://ghfast.top/https://raw.githubusercontent.com/bcmdy/MHYNameToImage/main/NameToImage-Go-WASM/www',
+    'https://github.com/bcmdy/MHYNameToImage/raw/refs/heads/main/NameToImage-Go-WASM/www',
+    'https://wget.la/https://raw.githubusercontent.com/bcmdy/MHYNameToImage/main/NameToImage-Go-WASM/www',
+    'https://hk.gh-proxy.org/https://raw.githubusercontent.com/bcmdy/MHYNameToImage/main/NameToImage-Go-WASM/www',
+    'https://hub.glowp.xyz/https://raw.githubusercontent.com/bcmdy/MHYNameToImage/main/NameToImage-Go-WASM/www',
+    'https://gh.catmak.name/https://raw.githubusercontent.com/bcmdy/MHYNameToImage/main/NameToImage-Go-WASM/www',
+    'https://cdn.gh-proxy.org/https://raw.githubusercontent.com/bcmdy/MHYNameToImage/main/NameToImage-Go-WASM/www',
+    'https://g.blfrp.cn/https://raw.githubusercontent.com/bcmdy/MHYNameToImage/main/NameToImage-Go-WASM/www',
+    'https://ghproxy.net/https://raw.githubusercontent.com/bcmdy/MHYNameToImage/main/NameToImage-Go-WASM/www'
+];
+
+let cachedWasmData = null;
+let cachedFontData = null;
+var CDN = cdnUrls[0];
+
+function setCacheStatus(msg, type) {
+    const el = document.getElementById('cacheStatus');
+    el.className = 'cache-status ' + (type || '');
+    el.textContent = msg;
+}
+
+function arrayBufferToBase64(buffer) {
+    let binary = '';
+    const bytes = new Uint8Array(buffer);
+    for (let i = 0; i < bytes.byteLength; i++) {
+        binary += String.fromCharCode(bytes[i]);
+    }
+    return btoa(binary);
+}
+
+function base64ToArrayBuffer(base64) {
+    const binary = atob(base64);
+    const bytes = new Uint8Array(binary.length);
+    for (let i = 0; i < binary.length; i++) {
+        bytes[i] = binary.charCodeAt(i);
+    }
+    return bytes.buffer;
+}
+
+function formatSize(bytes) {
+    if (bytes < 1024) return bytes + 'B';
+    if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + 'KB';
+    return (bytes / (1024 * 1024)).toFixed(2) + 'MB';
+}
+
+async function testSpeed(url, timeout = 5000) {
+    const start = performance.now();
+    try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), timeout);
+        const response = await fetch(url + '/main.wasm', { signal: controller.signal });
+        clearTimeout(timeoutId);
+        if (!response.ok) return Infinity;
+        await response.arrayBuffer();
+        return performance.now() - start;
+    } catch (e) {
+        return Infinity;
+    }
+}
+
+async function loadFromCache() {
+    const wasmCache = localStorage.getItem('hyw_wasm_cache');
+    const fontCache = localStorage.getItem('hyw_font_cache');
+    if (wasmCache && fontCache) {
+        try {
+            cachedWasmData = base64ToArrayBuffer(wasmCache);
+            cachedFontData = base64ToArrayBuffer(fontCache);
+            setCacheStatus('已从缓存加载', 'success');
+            return true;
+        } catch (e) {
+            console.warn('缓存加载失败:', e.message);
+        }
+    }
+    return false;
+}
+
+async function tryLoadUrl(url, onProgress) {
+    try {
+        // 加载 wasm_exec.js
+        setCacheStatus('下载 wasm_exec.js...', 'warning');
+        const jsResp = await fetch(url + '/wasm_exec.js');
+        if (!jsResp.ok) throw new Error('wasm_exec.js: ' + jsResp.status);
+        const jsContent = await jsResp.text();
+
+        // 加载 WASM
+        setCacheStatus('下载 main.wasm...', 'warning');
+        const wasmResp = await fetch(url + '/main.wasm');
+        if (!wasmResp.ok) throw new Error('main.wasm: ' + wasmResp.status);
+        const wasmContentLength = wasmResp.headers.get('content-length');
+        const wasmTotal = wasmContentLength ? parseInt(wasmContentLength) : 0;
+        const wasmReader = wasmResp.body.getReader();
+        const wasmChunks = [];
+        let wasmReceived = 0;
+        while (true) {
+            const { done, value } = await wasmReader.read();
+            if (done) break;
+            wasmChunks.push(value);
+            wasmReceived += value.length;
+            if (onProgress && wasmTotal > 0) {
+                const percent = Math.round((wasmReceived / wasmTotal) * 100);
+                onProgress('WASM: ' + percent + '%');
+            }
+        }
+        const wasmData = new Uint8Array(wasmReceived);
+        let pos = 0;
+        for (const chunk of wasmChunks) {
+            wasmData.set(chunk, pos);
+            pos += chunk.length;
+        }
+
+        // 加载字体
+        setCacheStatus('下载字体...', 'warning');
+        const fontResp = await fetch(url + '/HYW.ttf');
+        if (!fontResp.ok) throw new Error('HYW.ttf: ' + fontResp.status);
+        const fontContentLength = fontResp.headers.get('content-length');
+        const fontTotal = fontContentLength ? parseInt(fontContentLength) : 0;
+        const fontReader = fontResp.body.getReader();
+        const fontChunks = [];
+        let fontReceived = 0;
+        while (true) {
+            const { done, value } = await fontReader.read();
+            if (done) break;
+            fontChunks.push(value);
+            fontReceived += value.length;
+            if (onProgress && fontTotal > 0) {
+                const percent = Math.round((fontReceived / fontTotal) * 100);
+                onProgress('字体: ' + percent + '%');
+            }
+        }
+        const fontData = new Uint8Array(fontReceived);
+        pos = 0;
+        for (const chunk of fontChunks) {
+            fontData.set(chunk, pos);
+            pos += chunk.length;
+        }
+
+        return { js: jsContent, wasm: wasmData.buffer, font: fontData.buffer };
+    } catch (e) {
+        console.error('下载错误:', e);
+        return null;
+    }
+}
+
+async function loadWithFallback() {
+    const urlSelect = document.getElementById('urlSelect');
+    const selectedIndex = parseInt(urlSelect.value);
+    let urlsToTry = selectedIndex < cdnUrls.length ? [cdnUrls[selectedIndex]] : [...cdnUrls];
+
+    // jsdelivr 放第一，其他测速
+    const jsdelivrUrl = urlsToTry.find(u => u.includes('jsdelivr'));
+    let sortedUrls = [];
+
+    if (jsdelivrUrl) {
+        sortedUrls.push(jsdelivrUrl);
+        const otherUrls = urlsToTry.filter(u => u !== jsdelivrUrl);
+        if (otherUrls.length > 0) {
+            setCacheStatus('测速中...', 'warning');
+            const speeds = await Promise.all(otherUrls.map(async url => {
+                const time = await testSpeed(url);
+                return { url, time };
+            }));
+            speeds.sort((a, b) => a.time - b.time);
+            sortedUrls = sortedUrls.concat(speeds.map(s => s.url));
+        }
+    } else {
+        const speeds = await Promise.all(urlsToTry.map(async url => {
+            const time = await testSpeed(url);
+            return { url, time };
+        }));
+        speeds.sort((a, b) => a.time - b.time);
+        sortedUrls = speeds.map(s => s.url);
+    }
+
+    for (let i = 0; i < sortedUrls.length; i++) {
+        setCacheStatus('尝试 ' + (i + 1) + '/' + sortedUrls.length + '...', 'warning');
+        const result = await tryLoadUrl(sortedUrls[i], (p) => setCacheStatus(p, 'warning'));
+        if (result) {
+            cachedWasmData = result.wasm;
+            cachedFontData = result.font;
+            // 缓存
+            localStorage.setItem('hyw_wasm_cache', arrayBufferToBase64(result.wasm));
+            localStorage.setItem('hyw_font_cache', arrayBufferToBase64(result.font));
+            setCacheStatus('缓存成功! WASM: ' + formatSize(result.wasm.byteLength) + ', 字体: ' + formatSize(result.font.byteLength), 'success');
+            return result;
+        }
+    }
+
+    setCacheStatus('加载失败，请检查网络', 'error');
+    return null;
+}
 
 function loadScript(url) {
-  return new Promise((resolve, reject) => {
-    var script = document.createElement('script');
-    script.src = url;
-    script.onload = resolve;
-    script.onerror = reject;
-    document.head.appendChild(script);
-  });
+    return new Promise((resolve, reject) => {
+        var script = document.createElement('script');
+        script.src = url;
+        script.onload = resolve;
+        script.onerror = reject;
+        document.head.appendChild(script);
+    });
 }
 
 async function run() {
-  try {
-    // 1. 加载Go运行时
-    await loadScript(CDN + "/wasm_exec.js");
-    console.log("wasm_exec.js loaded");
+    try {
+        // 尝试从缓存加载
+        let wasmBin, fontBuf;
+        const hasCache = await loadFromCache();
 
-    // 等待Go对象 (capital Go)
-    let attempts = 0;
-    while (typeof Go === 'undefined' && attempts < 50) {
-      await new Promise(r => setTimeout(r, 100));
-      attempts++;
+        if (hasCache) {
+            wasmBin = cachedWasmData;
+            fontBuf = cachedFontData;
+            setCacheStatus('从缓存加载', 'success');
+        } else {
+            // 从网络加载
+            const result = await loadWithFallback();
+            if (!result) throw new Error('加载失败');
+            wasmBin = result.wasm;
+            fontBuf = result.font;
+        }
+
+        // 1. 加载Go运行时
+        await loadScript(CDN + "/wasm_exec.js");
+        console.log("wasm_exec.js loaded");
+
+        // 等待Go对象
+        let attempts = 0;
+        while (typeof Go === 'undefined' && attempts < 50) {
+            await new Promise(r => setTimeout(r, 100));
+            attempts++;
+        }
+        if (typeof Go === 'undefined') {
+            throw new Error("Go not loaded");
+        }
+        console.log("Go is ready");
+
+        // 2. 加载WASM
+        var wasmMod = await WebAssembly.compile(wasmBin);
+        var go = new Go();
+        var instance = await WebAssembly.instantiate(wasmMod, go.importObject);
+        go.run(instance);
+        console.log("WASM loaded");
+
+        // 3. 加载字体
+        loadFont(new Uint8Array(fontBuf));
+        console.log("Font loaded, ready!");
+
+        // 启用按钮
+        var btn = document.getElementById('generate');
+        btn.disabled = false;
+        btn.textContent = '生成';
+
+    } catch(e) {
+        document.getElementById('result').innerHTML = '<div class="error">初始化失败: ' + e.message + '</div>';
+        console.error(e);
     }
-    if (typeof Go === 'undefined') {
-      throw new Error("Go not loaded");
-    }
-    console.log("Go is ready");
-
-    // 2. 加载WASM
-    var wasmResp = await fetch(CDN + "/main.wasm");
-    if (!wasmResp.ok) throw new Error("wasm fetch failed: " + wasmResp.status);
-    var wasmBin = await wasmResp.arrayBuffer();
-    var wasmMod = await WebAssembly.compile(wasmBin);
-    var go = new Go();  // 实例化Go
-    var instance = await WebAssembly.instantiate(wasmMod, go.importObject);
-    go.run(instance);
-    console.log("WASM loaded");
-
-    // 3. 加载字体
-    var fontResp = await fetch(CDN + "/HYW.ttf");
-    if (!fontResp.ok) throw new Error("font fetch failed: " + fontResp.status);
-    var fontBuf = await fontResp.arrayBuffer();
-    loadFont(new Uint8Array(fontBuf));
-    console.log("Font loaded, ready!");
-
-    // 启用按钮
-    var btn = document.getElementById('generate');
-    btn.disabled = false;
-    btn.textContent = 'Generate';
-
-  } catch(e) {
-    document.getElementById('result').innerHTML = '<div class="error">Init failed: ' + e.message + '</div>';
-    console.error(e);
-  }
 }
 
 document.getElementById('generate').onclick = function() {
-  var name = document.getElementById('name').value.trim();
-  var mark = document.getElementById('mark').checked;
-  if (!name) {
-    document.getElementById('result').innerHTML = '<div class="error">Please enter name</div>';
-    return;
-  }
-  var btn = this;
-  btn.disabled = true;
-  btn.textContent = 'Generating...';
-  try {
-    var result = generateImage(name, mark);
-    var html = '<div class="result-item"><label>Normal</label><img src="' + result.image + '"></div>';
-    if (result.imageMark) {
-      html += '<div class="result-item"><label>Mark</label><img src="' + result.imageMark + '"></div>';
+    var name = document.getElementById('name').value.trim();
+    var mark = document.getElementById('mark').checked;
+    if (!name) {
+        document.getElementById('result').innerHTML = '<div class="error">请输入ID名称</div>';
+        return;
     }
-    document.getElementById('result').innerHTML = html;
-  } catch(e) {
-    document.getElementById('result').innerHTML = '<div class="error">Generate failed: ' + e.message + '</div>';
-  }
-  btn.disabled = false;
-  btn.textContent = 'Generate';
+    var btn = this;
+    btn.disabled = true;
+    btn.textContent = '生成中...';
+    try {
+        var result = generateImage(name, mark);
+        var html = '<div class="result-item"><label>普通版</label><img src="' + result.image + '"><a href="' + result.image + '" download="' + name + '.png" class="download-btn">下载</a></div>';
+        if (result.imageMark) {
+            html += '<div class="result-item"><label>备注版</label><img src="' + result.imageMark + '"><a href="' + result.imageMark + '" download="' + name + '_mark.png" class="download-btn">下载</a></div>';
+        }
+        document.getElementById('result').innerHTML = html;
+    } catch(e) {
+        document.getElementById('result').innerHTML = '<div class="error">生成失败: ' + e.message + '</div>';
+    }
+    btn.disabled = false;
+    btn.textContent = '生成';
 };
+
+function clearCache() {
+    localStorage.removeItem('hyw_wasm_cache');
+    localStorage.removeItem('hyw_font_cache');
+    cachedWasmData = null;
+    cachedFontData = null;
+    setCacheStatus('缓存已清除', 'warning');
+    location.reload();
+}
+
+// 更新CDN选择
+document.getElementById('urlSelect').addEventListener('change', function() {
+    var idx = parseInt(this.value);
+    if (idx < cdnUrls.length) {
+        CDN = cdnUrls[idx];
+    } else {
+        CDN = cdnUrls[0];
+    }
+});
 
 // 启动
 run();
