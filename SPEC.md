@@ -45,7 +45,7 @@
 | NameToImage-CSharp | .NET 8.0 / C# / SixLabors.ImageSharp | Windows 命令行工具 |
 | NameToImage-Go-EXE | Go / golang.org/x/image | 命令行工具 |
 | NameToImage-Go-WASM | Go / WebAssembly / golang.org/x/image | 浏览器 Web 应用 |
-| NameToImage-HTML | HTML5 / JavaScript / Canvas API | 在线工具 |
+| NameToImage-HTML | HTML5 / JavaScript / Canvas API + opentype.js | 在线工具 |
 
 ### 3.2 项目结构
 
