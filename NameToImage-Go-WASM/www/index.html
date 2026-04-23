@@ -1,116 +1,96 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NameToImage WASM 测试</title>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Microsoft YaHei', sans-serif; background: #f5f6f7; padding: 20px; }
-        .container { max-width: 600px; margin: 0 auto; }
-        h1 { text-align: center; color: #323a45; margin-bottom: 30px; }
-        .card { background: #fff; border-radius: 8px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
-        .input-group { margin-bottom: 15px; }
-        label { display: block; margin-bottom: 8px; color: #323a45; font-weight: 500; }
-        input[type="text"] { width: 100%; padding: 12px 16px; border: 1px solid #dfe1e6; border-radius: 6px; font-size: 16px; outline: none; }
-        input[type="text"]:focus { border-color: #4c6ef5; }
-        .checkbox-group { margin-bottom: 15px; }
-        .checkbox-group label { display: flex; align-items: center; font-weight: normal; }
-        .checkbox-group input { margin-right: 8px; }
-        button { width: 100%; padding: 12px; background: #4c6ef5; color: #fff; border: none; border-radius: 6px; font-size: 16px; cursor: pointer; }
-        button:hover { background: #364fc7; }
-        button:disabled { background: #a2a2a2; cursor: not-allowed; }
-        .result { margin-top: 20px; }
-        .result h3 { margin-bottom: 10px; color: #323a45; }
-        .result-item { margin-bottom: 15px; }
-        .result-item label { margin-bottom: 5px; }
-        .result-item img { max-width: 100%; border: 1px solid #dfe1e6; border-radius: 4px; }
-        .loading { text-align: center; color: #666; }
-        .error { color: #dc3545; padding: 10px; background: #f8d7da; border-radius: 4px; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NameToImage WASM</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Microsoft YaHei',sans-serif;background:#f5f6f7;padding:20px}
+.container{max-width:600px;margin:0 auto}
+h1{text-align:center;color:#323a45;margin-bottom:30px}
+.card{background:#fff;border-radius:8px;padding:20px;box-shadow:0 2px 8px rgba(0,0,0,0.06);margin-bottom:20px}
+label{display:block;margin-bottom:8px;color:#323a45;font-weight:500}
+input[type="text"]{width:100%;padding:12px 16px;border:1px solid #dfe1e6;border-radius:6px;font-size:16px;margin-bottom:15px}
+.checkbox-group{margin-bottom:15px}
+.checkbox-group label{display:flex;align-items:center;font-weight:normal;cursor:pointer}
+.checkbox-group input{margin-right:8px}
+button{width:100%;padding:12px;background:#4c6ef5;color:#fff;border:none;border-radius:6px;font-size:16px;cursor:pointer}
+button:disabled{background:#a2a2a2;cursor:not-allowed}
+.result-item{margin-bottom:15px}
+.result-item label{margin-bottom:5px;font-size:14px}
+.result-item img{max-width:100%;border:1px solid #dfe1e6;border-radius:4px}
+.error{color:#dc3545;padding:10px;background:#f8d7da;border-radius:4px}
+</style>
 </head>
 <body>
-    <div class="container">
-        <h1>NameToImage WASM 测试</h1>
-        <div class="card">
-            <div class="input-group">
-                <label for="name">账号名称</label>
-                <input type="text" id="name" placeholder="请输入账号名称">
-            </div>
-            <div class="checkbox-group">
-                <label><input type="checkbox" id="mark"> 生成备注版</label>
-            </div>
-            <button id="generate" disabled>加载中...</button>
-            <div class="result" id="result"></div>
-        </div>
-    </div>
+<div class="container">
+<h1>NameToImage WASM</h1>
+<div class="card">
+<label for="name">Account Name</label>
+<input type="text" id="name" placeholder="Enter name">
+<div class="checkbox-group">
+<label><input type="checkbox" id="mark"> Generate Mark</label>
+</div>
+<button id="generate" disabled>Loading...</button>
+</div>
+<div class="card" id="result"></div>
+</div>
 
-    <script src="wasm_exec.js"></script>
-    <script>
-        const go = new Go();
-        const generateBtn = document.getElementById('generate');
-        const resultDiv = document.getElementById('result');
+<!-- 使用在线CDN -->
+<script src="https://cdn.jsdelivr.net/gh/bcmdy/MHYNameToImage@main/NameToImage-Go-WASM/www/wasm_exec.js"></script>
 
-        async function init() {
-            try {
-                const response = await fetch('main.wasm');
-                const buffer = await response.arrayBuffer();
-                const module = await WebAssembly.compile(buffer);
-                const instance = await WebAssembly.instantiate(module, go.importObject);
+<script>
+// CDN地址
+const CDN_BASE = "https://cdn.jsdelivr.net/gh/bcmdy/MHYNameToImage@main/NameToImage-Go-WASM/www";
 
-                await go.run(instance);
+async function init() {
+  try {
+    // 加载WASM
+    var wasmResp = await fetch(CDN_BASE + "/main.wasm");
+    var wasmBin = await wasmResp.arrayBuffer();
+    var wasmMod = await WebAssembly.compile(wasmBin);
+    var instance = await WebAssembly.instantiate(wasmMod, go.importObject);
+    go.run(instance);
 
-                if (typeof loadFont === 'function') {
-                    const fontResponse = await fetch('HYW.ttf');
-                    const fontBuffer = await fontResponse.arrayBuffer();
-                    loadFont(new Uint8Array(fontBuffer));
-                    generateBtn.disabled = false;
-                    generateBtn.textContent = '生成图片';
-                } else {
-                    showError('WASM 函数未加载');
-                }
-            } catch (err) {
-                showError('初始化失败: ' + err.message);
-            }
-        }
+    // 加载字体
+    var fontResp = await fetch(CDN_BASE + "/HYW.ttf");
+    var fontBuf = await fontResp.arrayBuffer();
+    loadFont(new Uint8Array(fontBuf));
 
-        function showError(msg) {
-            resultDiv.innerHTML = '<div class="error">' + msg + '</div>';
-        }
+    var btn = document.getElementById('generate');
+    btn.disabled = false;
+    btn.textContent = 'Generate';
+  } catch(e) {
+    document.getElementById('result').innerHTML = '<div class="error">Init failed: ' + e.message + '</div>';
+  }
+}
 
-        generateBtn.addEventListener('click', async () => {
-            const name = document.getElementById('name').value.trim();
-            const mark = document.getElementById('mark').checked;
+document.getElementById('generate').onclick = function() {
+  var name = document.getElementById('name').value.trim();
+  var mark = document.getElementById('mark').checked;
+  if (!name) {
+    document.getElementById('result').innerHTML = '<div class="error">Please enter name</div>';
+    return;
+  }
+  var btn = this;
+  btn.disabled = true;
+  btn.textContent = 'Generating...';
+  try {
+    var result = generateImage(name, mark);
+    var html = '<div class="result-item"><label>Normal</label><img src="' + result.image + '"></div>';
+    if (result.imageMark) {
+      html += '<div class="result-item"><label>Mark</label><img src="' + result.imageMark + '"></div>';
+    }
+    document.getElementById('result').innerHTML = html;
+  } catch(e) {
+    document.getElementById('result').innerHTML = '<div class="error">Generate failed: ' + e.message + '</div>';
+  }
+  btn.disabled = false;
+  btn.textContent = 'Generate';
+};
 
-            if (!name) {
-                showError('请输入账号名称');
-                return;
-            }
-
-            generateBtn.disabled = true;
-            generateBtn.textContent = '生成中...';
-            resultDiv.innerHTML = '';
-
-            try {
-                if (typeof generateImage === 'function') {
-                    const result = generateImage(name, mark);
-                    let html = '<div class="result-item"><label>普通版</label>';
-                    html += '<img src="' + result.image + '"></div>';
-                    if (result.imageMark) {
-                        html += '<div class="result-item"><label>备注版</label>';
-                        html += '<img src="' + result.imageMark + '"></div>';
-                    }
-                    resultDiv.innerHTML = html;
-                }
-            } catch (err) {
-                showError('生成失败: ' + err.message);
-            }
-
-            generateBtn.disabled = false;
-            generateBtn.textContent = '生成图片';
-        });
-
-        init();
-    </script>
+init();
+</script>
 </body>
 </html>
