@@ -43,16 +43,18 @@
 | 版本 | 技术栈 | 适用场景 |
 |------|--------|---------|
 | NameToImage-CSharp | .NET 8.0 / C# / SixLabors.ImageSharp | Windows 命令行工具 |
-| NameToImage-Go | Go / WebAssembly / golang.org/x/image | 浏览器 Web 应用 |
+| NameToImage-Go-EXE | Go / golang.org/x/image | 命令行工具 |
+| NameToImage-Go-WASM | Go / WebAssembly / golang.org/x/image | 浏览器 Web 应用 |
 | NameToImage-HTML | HTML5 / JavaScript / Canvas API | 在线工具 |
 
 ### 3.2 项目结构
 
 ```
-NameToImage/
-├── NameToImage-CSharp/   # C# 版
-├── NameToImage-Go/       # Go 版
-├── NameToImage-HTML/     # HTML 版
+MHYNameToImage/
+├── NameToImage-CSharp/     # C# 版
+├── NameToImage-Go-EXE/    # Go 版（命令行）
+├── NameToImage-Go-WASM/   # Go 版（WebAssembly）
+├── NameToImage-HTML/      # HTML 版
 ├── README.md
 └── SPEC.md
 ```
@@ -83,13 +85,19 @@ NameToImage/
 - 命令行参数：`NameToImage.exe 账号名 [-m]`
 - 输出文件到可执行文件同目录
 
-### 5.2 NameToImage-Go
+### 5.2 NameToImage-Go-EXE
+
+- 命令行参数：`-name 账号名 [-mark]`
+- 支持交互模式
+- 输出文件到当前目录
+
+### 5.3 NameToImage-Go-WASM
 
 - 通过 JavaScript 调用生成图片
 - 返回 Base64 编码的图片数据
 - 支持在浏览器环境中运行
 
-### 5.3 NameToImage-HTML
+### 5.4 NameToImage-HTML
 
 - 纯前端实现，无需服务器
 - 提供 Web UI 界面

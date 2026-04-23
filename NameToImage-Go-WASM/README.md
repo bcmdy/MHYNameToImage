@@ -1,4 +1,4 @@
-# NameToImage-Go
+# NameToImage-Go-WASM
 
 基于 Go 语言编译的 WebAssembly 版本，可在浏览器中直接运行。
 
@@ -7,7 +7,7 @@
 ### 编译 WASM
 
 ```bash
-cd NameToImage-Go
+cd NameToImage-Go-WASM
 GOOS=js GOARCH=wasm go build -o main.wasm main.go
 ```
 
@@ -76,7 +76,7 @@ const result = generateImage('账号名', false);
 ## 项目结构
 
 ```
-NameToImage-Go/
+NameToImage-Go-WASM/
 ├── main.go
 ├── go.mod
 ├── HYW.ttf

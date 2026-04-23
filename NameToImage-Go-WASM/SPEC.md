@@ -1,8 +1,8 @@
-# NameToImage-Go - 需求文档
+# NameToImage-Go-WASM - 需求文档
 
 ## 1. 项目概述
 
-- **项目名称**：NameToImage-Go
+- **项目名称**：NameToImage-Go-WASM
 - **项目类型**：WebAssembly 库
 - **核心功能**：在浏览器环境中生成账号名称 PNG 图片
 - **目标用户**：需要集成到 Web 应用中的开发者
@@ -72,7 +72,7 @@ Returns:
 ### 3.2 项目结构
 
 ```
-NameToImage-Go/
+NameToImage-Go-WASM/
 ├── main.go
 ├── go.mod
 ├── HYW.ttf

@@ -4,7 +4,7 @@
 
 ## 项目概述
 
-本项目提供了三种不同技术栈的实现方式，用于生成带有账号名称的 PNG 图片。图片采用与游戏内相同的字体和配色确保生成的名片图片与游戏风格一致。
+本项目提供了多种不同技术栈的实现方式，用于生成带有账号名称的 PNG 图片。图片采用与游戏内相同的字体和配色确保生成的名片图片与游戏风格一致。
 
 ## 技术实现
 
@@ -14,9 +14,15 @@
 
 技术栈：.NET 8.0 | C# | SixLabors.ImageSharp
 
-### NameToImage-Go（WebAssembly）
+### NameToImage-Go-EXE（命令行工具）
 
-基于 Go 语言编译的 WebAssembly 版本，可直接在浏览器中运行。通过 golang.org/x/image 相关包实现图片处理，适合集成到 Web 应用中。
+基于 Go 语言开发的命令行工具，可编译为原生可执行文件。适合跨平台使用或集成到其他 Go 项目中。
+
+技术栈：Go | golang.org/x/image
+
+### NameToImage-Go-WASM（WebAssembly）
+
+基于 Go 语言编译的 WebAssembly 版本，可直接在浏览器中运行。适合集成到 Web 应用中。
 
 技术栈：Go | WebAssembly
 
@@ -41,10 +47,11 @@
 ## 目录结构
 
 ```
-NameToImage/
-├── NameToImage-CSharp/   # C# 版 (.NET 8.0)
-├── NameToImage-Go/     # Go 版 (WebAssembly)
-├── NameToImage-HTML/   # HTML 版
+MHYNameToImage/
+├── NameToImage-CSharp/     # C# 版 (.NET 8.0)
+├── NameToImage-Go-EXE/     # Go 版（命令行）
+├── NameToImage-Go-WASM/     # Go 版（WebAssembly）
+├── NameToImage-HTML/       # HTML 版
 ├── README.md
 └── SPEC.md
 ```
