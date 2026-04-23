@@ -45,11 +45,21 @@
 - **语言**：HTML5 / JavaScript
 - **图片处理**：Canvas API
 
-### 3.2 项目结构
+### 3.2 渲染方式
+
+HTML 版本提供两种渲染方式：
+
+| 版本 | 渲染方式 | 说明 |
+|------|---------|------|
+| index_canvas.html | Canvas fillText | 使用浏览器 Canvas API |
+| index_opentype.html | opentype.js Path | 获取字形路径手动绘制 |
+
+### 3.3 项目结构
 
 ```
 NameToImage-HTML/
-├── index.html
+├── index_canvas.html
+├── index_opentype.html
 ├── HYW.ttf
 ├── README.md
 └── SPEC.md
