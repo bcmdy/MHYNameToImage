@@ -1,19 +1,16 @@
 param(
-    [string]$Version = "1.0.0",
-    [string]$GoPath = ""
+    [string]$Version = "1.0.0"
 )
 
 # 获取脚本所在目录并切换到该目录
 $ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 Set-Location $ScriptDir
 
-# 尝试将常见Go路径添加到PATH
+# 添加Go到PATH
 $GoPathsToCheck = @(
     "D:\Program Files\Go\bin",
     "C:\Program Files\Go\bin",
-    "C:\Go\bin",
-    "$env:USERPROFILE\AppData\Local\Programs\Go\bin",
-    "$env:LOCALAPPDATA\Programs\Go\bin"
+    "C:\Go\bin"
 )
 foreach ($path in $GoPathsToCheck) {
     if (Test-Path $path) {
@@ -24,30 +21,9 @@ foreach ($path in $GoPathsToCheck) {
 
 $OUTPUT_DIR = "publish"
 
-# 尝试查找 Go
-$GoExe = "go"
-if ($GoPath) {
-    $GoExe = $GoPath
-} else {
-    # 尝试常见安装路径
-    $GoPaths = @(
-        "C:\Program Files\Go\bin\go.exe",
-        "C:\Go\bin\go.exe",
-        "$env:USERPROFILE\AppData\Local\Programs\Go\bin\go.exe",
-        "$env:LOCALAPPDATA\Programs\Go\bin\go.exe"
-    )
-    foreach ($path in $GoPaths) {
-        if (Test-Path $path) {
-            $GoExe = $path
-            break
-        }
-    }
-}
-
 Write-Host "========================================" -ForegroundColor Cyan
 Write-Host "NameToImage Go EXE Build Script" -ForegroundColor Cyan
 Write-Host "========================================" -ForegroundColor Cyan
-Write-Host "Go: $GoExe" -ForegroundColor Gray
 Write-Host ""
 
 # Clean old files
@@ -55,24 +31,30 @@ Write-Host "Cleaning old files..." -ForegroundColor Yellow
 if (Test-Path $OUTPUT_DIR) {
     Remove-Item -Recurse -Force $OUTPUT_DIR
 }
-if (Test-Path "bin") {
-    Remove-Item -Recurse -Force "bin"
-}
+Remove-Item -Recurse -Force "bin" -ErrorAction SilentlyContinue
+Remove-Item -Force "go.sum" -ErrorAction SilentlyContinue
 
 # Create output directory
 if (-not (Test-Path $OUTPUT_DIR)) {
     New-Item -ItemType Directory -Path $OUTPUT_DIR | Out-Null
 }
 
-# Download dependencies
+# Initialize go.mod if needed
+if (-not (Test-Path "go.mod")) {
+    Write-Host "Initializing go.mod..." -ForegroundColor Yellow
+    go mod init name-to-image
+}
+
+# Download and tidy dependencies
 Write-Host ""
-Write-Host "Downloading dependencies..." -ForegroundColor Yellow
-& $GoExe mod download
+Write-Host "Downloading and tidying dependencies..." -ForegroundColor Yellow
+go get golang.org/x/image@v0.18.0
+go mod tidy
 
 # Build for Windows
 Write-Host ""
 Write-Host "Building for Windows..." -ForegroundColor Yellow
-& $GoExe build -ldflags "-s -w" -o "$OUTPUT_DIR/NameToImage.exe" main.go
+go build -ldflags "-s -w" -o "$OUTPUT_DIR/NameToImage.exe" .
 
 if ($LASTEXITCODE -ne 0) {
     Write-Host "[ERROR] Build failed!" -ForegroundColor Red
