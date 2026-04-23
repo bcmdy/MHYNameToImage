@@ -1,6 +1,10 @@
 @echo off
 setlocal
 
+:: 获取脚本所在目录并切换到该目录
+set "SCRIPT_DIR=%~dp0"
+cd /d "%SCRIPT_DIR%"
+
 echo ========================================
 echo NameToImage Go WASM Build Script
 echo ========================================
