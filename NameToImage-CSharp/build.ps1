@@ -2,6 +2,10 @@
     [string]$Version = "1.0.1"
 )
 
+# 获取脚本所在目录并切换到该目录
+$ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
+Set-Location $ScriptDir
+
 $CONFIG = "Release"
 $OUTPUT_DIR = "publish"
 
