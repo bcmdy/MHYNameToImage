@@ -4,35 +4,22 @@
 
 ## 使用方式
 
-### 编译 WASM
+### 编译
 
-```bash
-cd NameToImage-Go-WASM
-GOOS=js GOARCH=wasm go build -o main.wasm main.go
+```powershell
+.\build.ps1
 ```
 
-### 在浏览器中使用
+### 运行
 
-1. 启动 HTTP 服务器：
+启动 HTTP 服务器后访问 www 目录：
 
-```bash
-python3 -m http.server 8080
+```powershell
+cd www
+python -m http.server 8080
 ```
 
-2. 在 HTML 中引入：
-
-```html
-<script src="wasm_exec.js"></script>
-```
-
-3. 加载 WASM 模块并调用：
-
-```javascript
-const go = new Go();
-WebAssembly.instantiateStreaming(fetch("main.wasm"), go.importObject).then(result => {
-    go.run(result.instance);
-});
-```
+访问 http://localhost:8080
 
 ## API
 
@@ -79,7 +66,15 @@ const result = generateImage('账号名', false);
 NameToImage-Go-WASM/
 ├── main.go
 ├── go.mod
+├── build.ps1
+├── clean.ps1
 ├── HYW.ttf
+├── www/
+│   ├── index.html
+│   └── HYW.ttf
+├── publish/
+│   ├── main.wasm
+│   └── HYW.ttf
 ├── README.md
 └── SPEC.md
 ```

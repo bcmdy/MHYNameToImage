@@ -72,6 +72,14 @@ $env:GOARCH = ""
 # Copy font file
 Copy-Item "HYW.ttf" -Destination $OUTPUT_DIR -Force
 
+# Copy to www
+$wwwDir = "www"
+if (-not (Test-Path $wwwDir)) {
+    New-Item -ItemType Directory -Path $wwwDir | Out-Null
+}
+Copy-Item "$OUTPUT_DIR/main.wasm" -Destination $wwwDir -Force
+Copy-Item "HYW.ttf" -Destination $wwwDir -Force
+
 Write-Host ""
 Write-Host "========================================" -ForegroundColor Green
 Write-Host "Build completed successfully!" -ForegroundColor Green
