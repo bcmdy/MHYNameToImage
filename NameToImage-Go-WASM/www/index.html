@@ -134,13 +134,12 @@ async function testSpeed(url, timeout = 5000) {
 }
 
 async function loadFromCache() {
-    const wasmCache = localStorage.getItem('hyw_wasm_cache');
-    const fontCache = localStorage.getItem('hyw_font_cache');
-    if (wasmCache && fontCache) {
+    // 检查是否缓存（注意：本地存储空间有限，WASM可能无法缓存）
+    const fontCache = localStorage.getItem('hyy_font_cache');
+    if (fontCache) {
         try {
-            cachedWasmData = base64ToArrayBuffer(wasmCache);
             cachedFontData = base64ToArrayBuffer(fontCache);
-            setCacheStatus('已从缓存加载', 'success');
+            setCacheStatus('已从缓存加载字体', 'success');
             return true;
         } catch (e) {
             console.warn('缓存加载失败:', e.message);
@@ -252,10 +251,15 @@ async function loadWithFallback() {
         if (result) {
             cachedWasmData = result.wasm;
             cachedFontData = result.font;
-            // 缓存
-            localStorage.setItem('hyw_wasm_cache', arrayBufferToBase64(result.wasm));
-            localStorage.setItem('hyw_font_cache', arrayBufferToBase64(result.font));
-            setCacheStatus('缓存成功! WASM: ' + formatSize(result.wasm.byteLength) + ', 字体: ' + formatSize(result.font.byteLength), 'success');
+            // 尝试缓存，失败则忽略
+            try {
+                localStorage.setItem('hyy_wasm_cache', arrayBufferToBase64(result.wasm));
+                localStorage.setItem('hyy_font_cache', arrayBufferToBase64(result.font));
+                setCacheStatus('缓存成功! WASM: ' + formatSize(result.wasm.byteLength) + ', 字体: ' + formatSize(result.font.byteLength), 'success');
+            } catch(e) {
+                console.warn('缓存失败:', e.message);
+                setCacheStatus('加载成功 (本地存储空间不足，跳过缓存)', 'warning');
+            }
             return result;
         }
     }
@@ -276,21 +280,24 @@ function loadScript(url) {
 
 async function run() {
     try {
-        // 尝试从缓存加载
-        let wasmBin, fontBuf;
+        // 尝试从缓存加载字体
+        let fontBuf;
         const hasCache = await loadFromCache();
 
-        if (hasCache) {
-            wasmBin = cachedWasmData;
+        if (hasCache && cachedFontData) {
             fontBuf = cachedFontData;
-            setCacheStatus('从缓存加载', 'success');
+            setCacheStatus('从缓存加载字体', 'success');
         } else {
             // 从网络加载
             const result = await loadWithFallback();
             if (!result) throw new Error('加载失败');
-            wasmBin = result.wasm;
             fontBuf = result.font;
         }
+
+        // WASM需要每次从网络加载（文件太大无法缓存）
+        const wasmResult = await tryLoadUrl(CDN, (p) => setCacheStatus(p, 'warning'));
+        if (!wasmResult) throw new Error('WASM加载失败');
+        const wasmBin = wasmResult.wasm;
 
         // 1. 加载Go运行时
         await loadScript(CDN + "/wasm_exec.js");
@@ -354,9 +361,7 @@ document.getElementById('generate').onclick = function() {
 };
 
 function clearCache() {
-    localStorage.removeItem('hyw_wasm_cache');
-    localStorage.removeItem('hyw_font_cache');
-    cachedWasmData = null;
+    localStorage.removeItem('hyy_font_cache');
     cachedFontData = null;
     setCacheStatus('缓存已清除', 'warning');
     location.reload();
