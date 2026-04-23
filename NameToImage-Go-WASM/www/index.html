@@ -37,50 +37,59 @@ button:disabled{background:#a2a2a2;cursor:not-allowed}
 <div class="card" id="result"></div>
 </div>
 
-<!-- 使用jsdelivr CDN -->
-<script src="https://cdn.jsdelivr.net/gh/bcmdy/MHYNameToImage@main/NameToImage-Go-WASM/www/wasm_exec.js" onload="loaded=true;initApp();" onerror="loadError()"></script>
-
 <script>
-// CDN地址
-const CDN_BASE = "https://cdn.jsdelivr.net/gh/bcmdy/MHYNameToImage@main/NameToImage-Go-WASM/www";
+// 动态加载脚本
+const CDN = "https://cdn.jsdelivr.net/gh/bcmdy/MHYNameToImage@main/NameToImage-Go-WASM/www";
 
-var loaded = false;
-var loadErr = false;
-
-function loadError() {
-  loadErr = true;
-  document.getElementById('result').innerHTML = '<div class="error">Failed to load wasm_exec.js</div>';
+function loadScript(url) {
+  return new Promise((resolve, reject) => {
+    var script = document.createElement('script');
+    script.src = url;
+    script.onload = resolve;
+    script.onerror = reject;
+    document.head.appendChild(script);
+  });
 }
 
-function initApp() {
-  if (!window.go) {
-    document.getElementById('result').innerHTML = '<div class="error">Go not defined, retrying...</div>';
-    setTimeout(initApp, 100);
-    return;
-  }
-  init();
-}
-
-async function init() {
+async function run() {
   try {
-    // 加载WASM
-    var wasmResp = await fetch(CDN_BASE + "/main.wasm");
-    if (!wasmResp.ok) throw new Error("wasm fetch failed");
+    // 1. 加载Go运行时
+    await loadScript(CDN + "/wasm_exec.js");
+    console.log("wasm_exec.js loaded");
+
+    // 等待Go对象 (capital Go)
+    let attempts = 0;
+    while (typeof Go === 'undefined' && attempts < 50) {
+      await new Promise(r => setTimeout(r, 100));
+      attempts++;
+    }
+    if (typeof Go === 'undefined') {
+      throw new Error("Go not loaded");
+    }
+    console.log("Go is ready");
+
+    // 2. 加载WASM
+    var wasmResp = await fetch(CDN + "/main.wasm");
+    if (!wasmResp.ok) throw new Error("wasm fetch failed: " + wasmResp.status);
     var wasmBin = await wasmResp.arrayBuffer();
     var wasmMod = await WebAssembly.compile(wasmBin);
+    var go = new Go();  // 实例化Go
     var instance = await WebAssembly.instantiate(wasmMod, go.importObject);
     go.run(instance);
+    console.log("WASM loaded");
 
-    // 加载字体
-    var fontResp = await fetch(CDN_BASE + "/HYW.ttf");
-    if (!fontResp.ok) throw new Error("font fetch failed");
+    // 3. 加载字体
+    var fontResp = await fetch(CDN + "/HYW.ttf");
+    if (!fontResp.ok) throw new Error("font fetch failed: " + fontResp.status);
     var fontBuf = await fontResp.arrayBuffer();
     loadFont(new Uint8Array(fontBuf));
+    console.log("Font loaded, ready!");
 
+    // 启用按钮
     var btn = document.getElementById('generate');
     btn.disabled = false;
     btn.textContent = 'Generate';
-    console.log("Loaded successfully!");
+
   } catch(e) {
     document.getElementById('result').innerHTML = '<div class="error">Init failed: ' + e.message + '</div>';
     console.error(e);
@@ -111,12 +120,8 @@ document.getElementById('generate').onclick = function() {
   btn.textContent = 'Generate';
 };
 
-// 等待页面加载完成后检查
-window.onload = function() {
-  if (typeof go === 'undefined') {
-    document.getElementById('result').innerHTML = '<div class="error">Waiting for Go...</div>';
-  }
-};
+// 启动
+run();
 </script>
 </body>
 </html>
