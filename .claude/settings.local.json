@@ -9,9 +9,7 @@
       "Bash(git commit -m ' *)",
       "Bash(go mod *)",
       "Bash(go build *)",
-      "Bash(echo \"Exit code: $?\")",
-      "Bash(pwsh -File embed.ps1)",
-      "Bash(git push *)"
+      "Bash(powershell -File build.ps1)"
     ]
   }
 }
