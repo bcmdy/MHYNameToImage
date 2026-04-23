@@ -56,6 +56,34 @@ MHYNameToImage/
 └── SPEC.md
 ```
 
+## 编译脚本
+
+### C# 版
+
+```powershell
+cd NameToImage-CSharp
+dotnet publish NameToImage.csproj -c Release -p:PublishSingleFile=true -o ./publish
+```
+
+### Go EXE 版
+
+```bat
+cd NameToImage-Go-EXE
+go build -o NameToImage.exe main.go
+```
+
+### Go WASM 版
+
+```bat
+set GOOS=js
+set GOARCH=wasm
+go build -o main.wasm main.go
+```
+
+### HTML 版
+
+无需编译，直接在浏览器中打开 index.html 即可。
+
 ## 相关文档
 
 各版本的详细需求文档和使用说明请参见对应子项目的 README.md 文件。
