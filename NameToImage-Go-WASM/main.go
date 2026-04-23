@@ -113,13 +113,11 @@ func createImage(name string, textColor [3]uint8, originX int) image.Image {
 	bg := color.RGBA{245, 246, 247, 255}
 	draw.Draw(img, img.Bounds(), &image.Uniform{bg}, image.Point{}, draw.Src)
 
-	// 使用与HTML版本相同的定位：textBaseline='middle', y=height/2
-	// Go的font.Drawer使用baseline，需要向上偏移以实现垂直居中
+	// 使用与EXE版本相同的定位公式
 	d.Dst = img
 	d.Src = image.NewUniform(color.RGBA{textColor[0], textColor[1], textColor[2], 255})
-	// y坐标：height/2 减去ascent的一半来实现垂直居中
-	ascent := fontFace.Metrics().Ascent.Round()
-	y := (height*64)/2 - (ascent*64)/2
+	fontSize := 24.0
+	y := (height + int(fontSize)) / 2 - 4
 	d.Dot = fixed.P(originX, y)
 	d.DrawString(name)
 
