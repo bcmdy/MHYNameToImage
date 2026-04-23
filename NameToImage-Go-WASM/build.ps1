@@ -6,6 +6,21 @@ param(
 $ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 Set-Location $ScriptDir
 
+# 尝试将常见Go路径添加到PATH
+$GoPathsToCheck = @(
+    "D:\Program Files\Go\bin",
+    "C:\Program Files\Go\bin",
+    "C:\Go\bin",
+    "$env:USERPROFILE\AppData\Local\Programs\Go\bin",
+    "$env:LOCALAPPDATA\Programs\Go\bin"
+)
+foreach ($path in $GoPathsToCheck) {
+    if (Test-Path $path) {
+        $env:PATH = "$path;$env:PATH"
+        break
+    }
+}
+
 $OUTPUT_DIR = "publish"
 
 Write-Host "========================================" -ForegroundColor Cyan
@@ -23,6 +38,11 @@ if (Test-Path $OUTPUT_DIR) {
 if (-not (Test-Path $OUTPUT_DIR)) {
     New-Item -ItemType Directory -Path $OUTPUT_DIR | Out-Null
 }
+
+# Download dependencies
+Write-Host ""
+Write-Host "Downloading dependencies..." -ForegroundColor Yellow
+& go mod download
 
 # Build for WASM
 Write-Host ""

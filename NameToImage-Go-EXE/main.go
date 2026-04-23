@@ -1,10 +1,11 @@
 package main
 
 import (
-	"flags"
+	"flag"
 	"fmt"
 	"log"
 	"os"
+
 	"golang.org/x/image/draw"
 	"golang.org/x/image/font"
 	"golang.org/x/image/font/opentype"
@@ -15,9 +16,9 @@ import (
 )
 
 func main() {
-	name := flags.String("name", "", "账号名称")
-	mark := flags.Bool("mark", false, "生成备注版")
-	flags.Parse()
+	name := flag.String("name", "", "账号名称")
+	mark := flag.Bool("mark", false, "生成备注版")
+	flag.Parse()
 
 	if *name == "" {
 		fmt.Print("请输入账号名称: ")
