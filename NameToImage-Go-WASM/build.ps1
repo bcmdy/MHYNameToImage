@@ -56,7 +56,7 @@ Write-Host ""
 Write-Host "Building for WebAssembly..." -ForegroundColor Yellow
 $env:GOOS = "js"
 $env:GOARCH = "wasm"
-go build -ldflags "-s -w" -o "$OUTPUT_DIR/main.wasm" .
+go build -ldflags "-s -w -buildvcs=false" -trimpath -o "$OUTPUT_DIR/main.wasm" .
 
 if ($LASTEXITCODE -ne 0) {
     Write-Host "[ERROR] Build failed!" -ForegroundColor Red
