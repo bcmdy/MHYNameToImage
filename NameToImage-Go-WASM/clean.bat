@@ -1,0 +1,12 @@
+@echo off
+setlocal
+
+echo ========================================
+echo Clean Script
+echo ========================================
+echo.
+
+:: Clean build outputs
+if exist "publish" rmdir /s /q "publish"
+
+echo Clean completed!

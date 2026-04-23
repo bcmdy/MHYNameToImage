@@ -6,7 +6,8 @@
       "Bash(./NameToImage.exe 测试玩家)",
       "Bash(./NameToImage.exe 测试玩家 -m)",
       "Bash(git add *)",
-      "Bash(git commit -m ' *)"
+      "Bash(git commit -m ' *)",
+      "Bash(go mod *)"
     ]
   }
 }
