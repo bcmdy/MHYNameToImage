@@ -118,6 +118,7 @@ $csdir = Join-Path $OUTPUT_DIR "TextToImage-CSharp"
 if (-not (Test-Path $csdir)) { New-Item -ItemType Directory -Path $csdir | Out-Null }
 Copy-Item "TextToImage-CSharp\publish\*" -Destination $csdir -Recurse -Force
 Copy-Item "TextToImage-CSharp\README.md" -Destination $csdir -Force
+Copy-Item "TextToImage-CSharp\SPEC.md" -Destination $csdir -Force
 Write-Host "  - TextToImage-CSharp copied" -ForegroundColor Green
 
 # Copy TextToImage-CSharp-UI
@@ -133,6 +134,7 @@ $goexedir = Join-Path $OUTPUT_DIR "TextToImage-Go-EXE"
 if (-not (Test-Path $goexedir)) { New-Item -ItemType Directory -Path $goexedir | Out-Null }
 Copy-Item "TextToImage-Go-EXE\publish\*" -Destination $goexedir -Recurse -Force
 Copy-Item "TextToImage-Go-EXE\README.md" -Destination $goexedir -Force
+Copy-Item "TextToImage-Go-EXE\SPEC.md" -Destination $goexedir -Force
 Write-Host "  - TextToImage-Go-EXE copied" -ForegroundColor Green
 
 # Copy TextToImage-Go-WASM (only HTML, wasm and font are loaded from CDN)
@@ -140,11 +142,13 @@ $wasmdir = Join-Path $OUTPUT_DIR "TextToImage-Go-WASM"
 if (-not (Test-Path $wasmdir)) { New-Item -ItemType Directory -Path $wasmdir | Out-Null }
 Get-ChildItem "TextToImage-Go-WASM\www" -Filter "*.html" | Copy-Item -Destination $wasmdir -Force
 Copy-Item "TextToImage-Go-WASM\README.md" -Destination $wasmdir -Force
+Copy-Item "TextToImage-Go-WASM\SPEC.md" -Destination $wasmdir -Force
 Write-Host "  - TextToImage-Go-WASM copied" -ForegroundColor Green
 
 # Copy TextToImage-HTML
 $htmlDest = Join-Path $OUTPUT_DIR "TextToImage-HTML"
 Copy-Item "TextToImage-HTML\README.md" -Destination $htmlDest -Force
+Copy-Item "TextToImage-HTML\SPEC.md" -Destination $htmlDest -Force
 Write-Host "  - TextToImage-HTML copied" -ForegroundColor Green
 
 # Copy root README and SPEC to output
