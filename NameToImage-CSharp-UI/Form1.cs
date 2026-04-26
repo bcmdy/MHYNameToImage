@@ -316,7 +316,46 @@ public partial class Form1 : Form
             }
         };
 
-        groupBoxOutput.Controls.AddRange(new Control[] { textBoxOutputDir, btnBrowseOutput });
+        var btnClearOutput = new Button
+        {
+            Text = "清空输出",
+            Location = new System.Drawing.Point(385, 20),
+            Size = new System.Drawing.Size(75, 25)
+        };
+        btnClearOutput.Click += (s, e) =>
+        {
+            var outputDir = textBoxOutputDir.Text.Trim();
+            if (string.IsNullOrEmpty(outputDir))
+                outputDir = _outputDir;
+
+            if (Directory.Exists(outputDir))
+            {
+                var files = Directory.GetFiles(outputDir, "*.png");
+                if (files.Length > 0)
+                {
+                    var result = MessageBox.Show($"确定要删除输出文件夹中的 {files.Length} 张图片吗？", "确认", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                    if (result == DialogResult.Yes)
+                    {
+                        foreach (var file in files)
+                        {
+                            File.Delete(file);
+                        }
+                        labelStatus.Text = $"已删除 {files.Length} 张图片";
+                        RefreshPreview(outputDir);
+                    }
+                }
+                else
+                {
+                    labelStatus.Text = "输出文件夹为空";
+                }
+            }
+            else
+            {
+                labelStatus.Text = "输出文件夹不存在";
+            }
+        };
+
+        groupBoxOutput.Controls.AddRange(new Control[] { textBoxOutputDir, btnBrowseOutput, btnClearOutput });
 
         // Preview section
         var groupBoxPreview = new GroupBox
