@@ -14,9 +14,10 @@ Write-Host "========================================" -ForegroundColor Cyan
 Write-Host ""
 
 # Create output directory
-if (-not (Test-Path $OUTPUT_DIR)) {
-    New-Item -ItemType Directory -Path $OUTPUT_DIR | Out-Null
+if (Test-Path $OUTPUT_DIR) {
+    Remove-Item -Recurse -Force $OUTPUT_DIR
 }
+New-Item -ItemType Directory -Path $OUTPUT_DIR | Out-Null
 
 # Build TextToImage-CSharp
 Write-Host "========================================" -ForegroundColor Yellow
