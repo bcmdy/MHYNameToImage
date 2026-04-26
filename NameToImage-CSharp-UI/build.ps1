@@ -49,10 +49,10 @@ for ($i = 0; $i -lt $retryCount; $i++) {
     }
 }
 
-# Build project (single file, requires .NET 8 runtime)
+# Build project (requires .NET 8 runtime)
 Write-Host ""
-Write-Host "Building project (single file)..." -ForegroundColor Yellow
-dotnet publish NameToImage-CSharp-UI.csproj -c $CONFIG -p:PublishSingleFile=true --self-contained false -p:DebugType=none -p:DebugSymbols=false -p:Version=$Version -p:AssemblyVersion=$Version -p:FileVersion=$Version -o ./$OUTPUT_DIR
+Write-Host "Building project..." -ForegroundColor Yellow
+dotnet publish NameToImage-CSharp-UI.csproj -c $CONFIG --self-contained false -p:DebugType=none -p:DebugSymbols=false -p:Version=$Version -p:AssemblyVersion=$Version -p:FileVersion=$Version -o ./$OUTPUT_DIR
 
 if ($LASTEXITCODE -ne 0) {
     Write-Host ""
