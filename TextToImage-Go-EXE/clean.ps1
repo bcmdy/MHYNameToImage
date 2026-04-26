@@ -4,7 +4,7 @@ $OriginalDir = Get-Location
 Set-Location $ScriptDir
 
 Write-Host "========================================" -ForegroundColor Cyan
-Write-Host "NameToImage Go EXE Clean Script" -ForegroundColor Cyan
+Write-Host "TextToImage Go EXE Clean Script" -ForegroundColor Cyan
 Write-Host "========================================" -ForegroundColor Cyan
 Write-Host ""
 

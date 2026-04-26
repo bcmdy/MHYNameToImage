@@ -1,10 +1,10 @@
-# NameToImage-Go-WASM - 需求文档
+# TextToImage-Go-WASM - 需求文档
 
 ## 1. 项目概述
 
-- **项目名称**：NameToImage-Go-WASM
+- **项目名称**：TextToImage-Go-WASM
 - **项目类型**：WebAssembly 库
-- **核心功能**：在浏览器环境中生成账号名称 PNG 图片
+- **核心功能**：在浏览器环境中生成文字 PNG 图片
 - **目标用户**：需要集成到 Web 应用中的开发者
 
 ## 2. 功能需求
@@ -35,12 +35,12 @@ Returns:
 { status: "loaded", size: number }
 ```
 
-#### generateImage(name: string, generateMark?: boolean)
+#### generateTextImage(text: string, generateMark?: boolean)
 
 生成图片。
 
 Parameters:
-- `name` - 账号名称
+- `text` - 文字内容
 - `generateMark` - 是否生成备注版（可选，默认 false）
 
 Returns:
@@ -72,7 +72,7 @@ Returns:
 ### 3.2 项目结构
 
 ```
-NameToImage-Go-WASM/
+TextToImage-Go-WASM/
 ├── main.go
 ├── go.mod
 ├── HYW.ttf
@@ -86,7 +86,7 @@ NameToImage-Go-WASM/
 
 - [x] 能正常编译为 WASM
 - [x] loadFont 能加载字体数据
-- [x] generateImage 能生成 PNG 图片
+- [x] generateTextImage 能生成 PNG 图片
 - [x] 图片文字颜色符合规格
 - [x] 图片背景色为 RGB(245,246,247)
 - [x] 图片宽度能根据文字长度自适应

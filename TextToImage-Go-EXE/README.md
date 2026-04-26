@@ -1,4 +1,4 @@
-# NameToImage-Go-EXE
+# TextToImage-Go-EXE
 
 基于 Go 语言的命令行工具，可编译为 Windows 可执行文件。
 
@@ -7,32 +7,32 @@
 ### 编译
 
 ```bash
-cd NameToImage-Go-EXE
-go build -o NameToImage.exe main.go
+cd TextToImage-Go-EXE
+go build -o TextToImage.exe main.go
 ```
 
 ### 运行
 
 ```bash
 # 生成普通版
-./NameToImage.exe -name 账号名
+./TextToImage.exe -name 文字
 
 # 生成普通版 + 备注版
-./NameToImage.exe -name 账号名 -mark
+./TextToImage.exe -name 文字 -mark
 ```
 
 ### 交互模式
 
 ```bash
-./NameToImage.exe
-请输入账号名称: 账号名
+./TextToImage.exe
+请输入文字: 文字
 ```
 
 ## 输出
 
 图片保存在当前目录下：
-- `账号名.png` - 普通版
-- `账号名备注.png` - 备注版（仅 -mark 参数）
+- `文字.png` - 普通版
+- `文字备注.png` - 备注版（仅 -mark 参数）
 
 ## 图片规格
 
@@ -46,7 +46,7 @@ go build -o NameToImage.exe main.go
 ## 项目结构
 
 ```
-NameToImage-Go-EXE/
+TextToImage-Go-EXE/
 ├── main.go
 ├── go.mod
 ├── HYW.ttf

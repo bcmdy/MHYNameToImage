@@ -1,4 +1,4 @@
-# NameToImage-HTML
+# TextToImage-HTML
 
 纯前端实现的在线工具，无需后端服务，直接在浏览器中运行。
 
@@ -20,7 +20,7 @@ npx http-server -p 8080
 
 ## 功能
 
-- 输入账号名称生成对应的 PNG 图片
+- 输入文字生成对应的 PNG 图片
 - 支持同时生成普通版和备注版
 - 支持图片预览和下载
 - 无需服务器，纯客户端运行
@@ -37,7 +37,7 @@ npx http-server -p 8080
 ## 项目结构
 
 ```
-NameToImage-HTML/
+TextToImage-HTML/
 ├── index_canvas.html   # Canvas API 渲染版
 ├── index_opentype.html # opentype.js 路径渲染版
 ├── HYW.ttf

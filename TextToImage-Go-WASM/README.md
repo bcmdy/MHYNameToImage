@@ -1,4 +1,4 @@
-# NameToImage-Go-WASM
+# TextToImage-Go-WASM
 
 基于 Go 语言编译的 WebAssembly 版本，可在浏览器中直接运行。
 
@@ -32,12 +32,12 @@ const fontData = await fetch('HYW.ttf').then(r => r.arrayBuffer());
 loadFont(new Uint8Array(fontData));
 ```
 
-### generateImage(name, generateMark?)
+### generateTextImage(text, generateMark?)
 
 生成图片。
 
 ```javascript
-const result = generateImage('账号名', false);
+const result = generateTextImage('文字', false);
 // result.image - Base64 编码的普通版图片
 // result.imageMark - Base64 编码的备注版图片（如果 generateMark 为 true）
 ```
@@ -63,7 +63,7 @@ const result = generateImage('账号名', false);
 ## 项目结构
 
 ```
-NameToImage-Go-WASM/
+TextToImage-Go-WASM/
 ├── main.go
 ├── go.mod
 ├── build.ps1

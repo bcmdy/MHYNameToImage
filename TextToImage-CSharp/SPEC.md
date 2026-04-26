@@ -1,11 +1,11 @@
-# NameToImage-CSharp - 需求文档
+# TextToImage-CSharp - 需求文档
 
 ## 1. 项目概述
 
-- **项目名称**：NameToImage-CSharp
+- **项目名称**：TextToImage-CSharp
 - **项目类型**：命令行工具（.NET 控制台应用程序）
-- **核心功能**：输入账号名称后生成PNG图片
-- **目标用户**：原神玩家、需要生成游戏内角色名称图片的用户
+- **核心功能**：输入文字后生成PNG图片
+- **目标用户**：需要生成文字图片的用户
 
 ## 2. 功能需求
 
@@ -25,13 +25,13 @@
 
 #### 交互模式（无参数）
 
-双击运行程序，提示输入账号名，生成后3秒自动退出。
+双击运行程序，提示输入文字，生成后3秒自动退出。
 
 #### 命令行模式（带参数）
 
 ```
-NameToImage.exe 账号名      # 普通版
-NameToImage.exe 账号名 -m   # 普通版+备注版
+TextToImage.exe 文字      # 普通版
+TextToImage.exe 文字 -m   # 普通版+备注版
 ```
 
 ### 2.3 图片规格
@@ -60,10 +60,10 @@ NameToImage.exe 账号名 -m   # 普通版+备注版
 ### 3.2 项目结构
 
 ```
-NameToImage-CSharp/
+TextToImage-CSharp/
 ├── Program.cs
 ├── ImageGenerator.cs
-├── NameToImage.csproj
+├── TextToImage.csproj
 ├── MHYNameToImage.sln
 ├── Resources/
 │   └── HYW.ttf
@@ -79,7 +79,7 @@ NameToImage-CSharp/
 ### 4.1 功能验收
 
 - [x] 程序能正常启动，显示欢迎信息
-- [x] 输入名称后能正确生成 PNG 图片
+- [x] 输入文字后能正确生成 PNG 图片
 - [x] 图片文字颜色符合规格（普通版 RGB(80,87,105)，备注版 RGB(100,119,171)）
 - [x] 图片背景色为 RGB(245,246,247)
 - [x] 图片宽度能根据文字长度自适应
@@ -89,7 +89,7 @@ NameToImage-CSharp/
 
 ### 4.2 文件验收
 
-- [x] 生成文件名为：`账号名.png` 和 `账号名备注.png`
+- [x] 生成文件名为：`文字.png` 和 `文字备注.png`
 - [x] 文件格式为 PNG
 - [x] 文件保存在 exe 同目录
 
@@ -99,10 +99,10 @@ NameToImage-CSharp/
 
 ```
 双击运行
-请输入账号名称: 玩家123
+请输入文字: 测试
 正在生成图片...
-图片已保存到：.\玩家123.png
-图片已保存到：.\玩家123备注.png
+图片已保存到：.\测试.png
+图片已保存到：.\测试备注.png
 完成！
 3秒后将自动退出...
 ```
@@ -110,6 +110,6 @@ NameToImage-CSharp/
 ### 命令行模式
 
 ```
-NameToImage.exe 玩家123
-NameToImage.exe 玩家123 -m
+TextToImage.exe 测试
+TextToImage.exe 测试 -m
 ```

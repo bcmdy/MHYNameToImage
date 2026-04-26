@@ -1,10 +1,10 @@
-# NameToImage-Go-EXE - 需求文档
+# TextToImage-Go-EXE - 需求文档
 
 ## 1. 项目概述
 
-- **项目名称**：NameToImage-Go-EXE
+- **项目名称**：TextToImage-Go-EXE
 - **项目类型**：命令行工具
-- **核心功能**：输入账号名称后生成 PNG 图片
+- **核心功能**：输入文字后生成 PNG 图片
 - **目标用户**：需要本地生成图片的用户
 
 ## 2. 功能需求
@@ -24,7 +24,7 @@
 ### 2.2 命令行参数
 
 ```
--name string    账号名称
+-name string    文字
 -mark           生成备注版
 ```
 
@@ -48,7 +48,7 @@
 ### 3.2 项目结构
 
 ```
-NameToImage-Go-EXE/
+TextToImage-Go-EXE/
 ├── main.go
 ├── go.mod
 ├── HYW.ttf
@@ -61,7 +61,7 @@ NameToImage-Go-EXE/
 ### 4.1 功能验收
 
 - [x] 程序能正常启动
-- [x] 输入名称后能正确生成 PNG 图片
+- [x] 输入文字后能正确生成 PNG 图片
 - [x] 图片文字颜色符合规格
 - [x] 图片背景色为 RGB(245,246,247)
 - [x] 图片宽度能根据文字长度自适应
@@ -70,6 +70,6 @@ NameToImage-Go-EXE/
 
 ### 4.2 文件验收
 
-- [x] 生成文件名为：`账号名.png` 和 `账号名备注.png`
+- [x] 生成文件名为：`文字.png` 和 `文字备注.png`
 - [x] 文件格式为 PNG
 - [x] 文件保存在当前目录
