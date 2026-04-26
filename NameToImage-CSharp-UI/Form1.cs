@@ -20,10 +20,10 @@ public partial class Form1 : Form
     private TextBox textBoxBgHex = null!;
     private Panel panelBgColorPreview = null!;
     private Panel panelPreview = null!;
-    private TextBox textBoxOutputDir = null!;
     private Button btnBrowseOutput = null!;
     private Button btnGenerateBatch = null!;
     private ToolStripStatusLabel labelStatus = null!;
+    private TextBox textBoxLog = null!;
     private ListView listViewPreview = null!;
 
     private readonly string _fontPath;
@@ -296,86 +296,99 @@ public partial class Form1 : Form
             Size = new System.Drawing.Size(400, 60)
         };
 
-        textBoxOutputDir = new TextBox
+        var labelOutputDir = new Label
         {
-            Location = new System.Drawing.Point(10, 22),
-            Size = new System.Drawing.Size(250, 23),
-            Text = _outputDir
+            Text = "output",
+            Location = new System.Drawing.Point(10, 25),
+            Size = new System.Drawing.Size(220, 23),
+            ForeColor = System.Drawing.Color.Gray
         };
 
-        btnBrowseOutput = new Button
+        var btnOpenOutput = new Button
         {
-            Text = "浏览",
-            Location = new System.Drawing.Point(265, 20),
-            Size = new System.Drawing.Size(65, 25)
+            Text = "打开目录",
+            Location = new System.Drawing.Point(235, 20),
+            Size = new System.Drawing.Size(75, 25)
         };
-        btnBrowseOutput.Click += (s, e) =>
+        btnOpenOutput.Click += (s, e) =>
         {
-            using var dialog = new FolderBrowserDialog();
-            if (dialog.ShowDialog() == DialogResult.OK)
-            {
-                textBoxOutputDir.Text = dialog.SelectedPath;
-            }
+            if (!Directory.Exists(_outputDir))
+                Directory.CreateDirectory(_outputDir);
+            System.Diagnostics.Process.Start("explorer.exe", _outputDir);
         };
 
         var btnClearOutput = new Button
         {
-            Text = "清空输出",
-            Location = new System.Drawing.Point(335, 20),
-            Size = new System.Drawing.Size(65, 25)
+            Text = "清空目录",
+            Location = new System.Drawing.Point(320, 20),
+            Size = new System.Drawing.Size(70, 25)
         };
         btnClearOutput.Click += (s, e) =>
         {
-            var outputDir = textBoxOutputDir.Text.Trim();
-            if (string.IsNullOrEmpty(outputDir))
-                outputDir = _outputDir;
-
+            var outputDir = _outputDir;
             if (Directory.Exists(outputDir))
             {
-                var files = Directory.GetFiles(outputDir, "*.png");
+                var files = Directory.GetFiles(outputDir);
                 if (files.Length > 0)
                 {
-                    var result = MessageBox.Show($"确定要删除输出文件夹中的 {files.Length} 张图片吗？", "确认", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                    var result = MessageBox.Show($"确定要删除目录内所有 {files.Length} 个文件吗？", "确认", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
                     if (result == DialogResult.Yes)
                     {
                         foreach (var file in files)
                         {
                             File.Delete(file);
                         }
-                        labelStatus.Text = $"已删除 {files.Length} 张图片";
+                        labelStatus.Text = $"已删除 {files.Length} 个文件";
                         RefreshPreview(outputDir);
                     }
                 }
                 else
                 {
-                    labelStatus.Text = "输出文件夹为空";
+                    labelStatus.Text = "目录为空";
                 }
-            }
-            else
-            {
-                labelStatus.Text = "输出文件夹不存在";
             }
         };
 
-        groupBoxOutput.Controls.AddRange(new Control[] { textBoxOutputDir, btnBrowseOutput, btnClearOutput });
+        groupBoxOutput.Controls.AddRange(new Control[] { labelOutputDir, btnOpenOutput, btnClearOutput });
 
         // Preview section
         var groupBoxPreview = new GroupBox
         {
             Text = "预览",
             Location = new System.Drawing.Point(460, 120),
-            Size = new System.Drawing.Size(400, 450)
+            Size = new System.Drawing.Size(400, 280)
         };
 
         listViewPreview = new ListView
         {
             Location = new System.Drawing.Point(10, 22),
-            Size = new System.Drawing.Size(380, 415),
+            Size = new System.Drawing.Size(380, 245),
             View = View.LargeIcon,
             Scrollable = true
         };
 
         groupBoxPreview.Controls.Add(listViewPreview);
+
+        // Log section
+        var groupBoxLog = new GroupBox
+        {
+            Text = "日志",
+            Location = new System.Drawing.Point(460, 410),
+            Size = new System.Drawing.Size(400, 160)
+        };
+
+        var textBoxLog = new TextBox
+        {
+            Location = new System.Drawing.Point(10, 22),
+            Size = new System.Drawing.Size(380, 120),
+            Multiline = true,
+            ReadOnly = true,
+            ScrollBars = ScrollBars.Vertical,
+            BackColor = System.Drawing.Color.White
+        };
+        this.textBoxLog = textBoxLog;
+
+        groupBoxLog.Controls.Add(textBoxLog);
 
         // Status bar
         var statusBar = new StatusStrip();
@@ -386,7 +399,7 @@ public partial class Form1 : Form
         this.Controls.AddRange(new Control[]
         {
             labelTitle, groupBoxSingle, groupBoxBatch, groupBoxOptions, groupBoxColors,
-            groupBoxOutput, groupBoxPreview, statusBar
+            groupBoxOutput, groupBoxPreview, groupBoxLog, statusBar
         });
 
         textBoxNormalHex.TextChanged += (s, e) => UpdateColorPreview(textBoxNormalHex, panelNormalColorPreview);
@@ -399,6 +412,13 @@ public partial class Form1 : Form
         var enabled = checkBox.Checked;
         foreach (var tb in textBoxes)
             tb.Enabled = enabled;
+    }
+
+    private void AppendLog(string message)
+    {
+        if (textBoxLog == null) return;
+        var timestamp = DateTime.Now.ToString("HH:mm:ss");
+        textBoxLog.AppendText($"[{timestamp}] {message}\r\n");
     }
 
     private void UpdateColorPreview(TextBox textBox, Panel panel)
@@ -426,7 +446,6 @@ public partial class Form1 : Form
         }
 
         GenerateImages(name);
-        textBoxSingleName.Clear();
     }
 
     private void BtnGenerateBatch_Click(object? sender, EventArgs e)
@@ -461,11 +480,12 @@ public partial class Form1 : Form
             catch (Exception ex)
             {
                 labelStatus.Text = $"生成 {name} 失败: {ex.Message}";
+                AppendLog($"失败: {name} - {ex.Message}");
             }
         }
 
+        AppendLog($"批量生成完成: {successCount}/{names.Count} 张图片");
         labelStatus.Text = $"批量生成完成: {successCount}/{names.Count} 张图片已生成";
-        textBoxBatchNames.Clear();
     }
 
     private void BtnImportCSV_Click(object? sender, EventArgs e)
@@ -502,12 +522,7 @@ public partial class Form1 : Form
 
     private void GenerateImages(string name)
     {
-        var outputDir = textBoxOutputDir.Text.Trim();
-        if (string.IsNullOrEmpty(outputDir))
-        {
-            outputDir = _outputDir;
-            textBoxOutputDir.Text = outputDir;
-        }
+        var outputDir = _outputDir;
 
         if (!Directory.Exists(outputDir))
             Directory.CreateDirectory(outputDir);
@@ -525,6 +540,7 @@ public partial class Form1 : Form
         generator.GenerateImages(name, options);
 
         labelStatus.Text = $"图片已保存到: {outputDir}";
+        AppendLog($"生成图片: {name}");
         RefreshPreview(outputDir);
     }
 
