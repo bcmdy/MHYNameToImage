@@ -130,12 +130,10 @@ if (-not (Test-Path $goexedir)) { New-Item -ItemType Directory -Path $goexedir |
 Copy-Item "TextToImage-Go-EXE\publish\*" -Destination $goexedir -Recurse -Force
 Write-Host "  - TextToImage-Go-EXE copied" -ForegroundColor Green
 
-# Copy TextToImage-Go-WASM (only www folder, wasm and font are loaded from CDN)
+# Copy TextToImage-Go-WASM (only HTML, wasm and font are loaded from CDN)
 $wasmdir = Join-Path $OUTPUT_DIR "TextToImage-Go-WASM"
 if (-not (Test-Path $wasmdir)) { New-Item -ItemType Directory -Path $wasmdir | Out-Null }
-$wasmdestwww = Join-Path $wasmdir "www"
-if (-not (Test-Path $wasmdestwww)) { New-Item -ItemType Directory -Path $wasmdestwww | Out-Null }
-Get-ChildItem "TextToImage-Go-WASM\www" -Filter "*.html" | Copy-Item -Destination $wasmdestwww -Force
+Get-ChildItem "TextToImage-Go-WASM\www" -Filter "*.html" | Copy-Item -Destination $wasmdir -Force
 Write-Host "  - TextToImage-Go-WASM copied" -ForegroundColor Green
 
 Write-Host ""
