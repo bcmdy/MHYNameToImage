@@ -334,7 +334,7 @@ document.getElementById('generate').onclick = function() {
     btn.disabled = true;
     btn.textContent = '生成中...';
     try {
-        var result = generateImage(name, mark);
+        var result = generateTextImage(name, mark);
         var html = '<div class="result-item"><label>普通版</label><img src="' + result.image + '"><a href="' + result.image + '" download="' + name + '.png" class="download-btn">下载</a></div>';
         if (result.imageMark) {
             html += '<div class="result-item"><label>备注版</label><img src="' + result.imageMark + '"><a href="' + result.imageMark + '" download="' + name + '_mark.png" class="download-btn">下载</a></div>';
