@@ -28,9 +28,11 @@ public partial class Form1 : Form
 
     private readonly string _fontPath;
     private readonly string _outputDir;
+    private readonly string _version;
 
-    public Form1()
+    public Form1(string version = "1.0.0")
     {
+        _version = version;
         var baseDir = AppDomain.CurrentDomain.BaseDirectory;
         _fontPath = Path.Combine(baseDir, "HYW.ttf");
         _outputDir = Path.Combine(baseDir, "output");
@@ -43,7 +45,7 @@ public partial class Form1 : Form
 
     private void InitializeComponent()
     {
-        this.Text = "NameToImage-CSharp-UI";
+        this.Text = $"NameToImage-CSharp-UI v{_version}";
         this.Size = new System.Drawing.Size(900, 700);
         this.StartPosition = FormStartPosition.CenterScreen;
 
