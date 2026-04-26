@@ -117,25 +117,40 @@ Write-Host "========================================" -ForegroundColor Yellow
 $csdir = Join-Path $OUTPUT_DIR "TextToImage-CSharp"
 if (-not (Test-Path $csdir)) { New-Item -ItemType Directory -Path $csdir | Out-Null }
 Copy-Item "TextToImage-CSharp\publish\*" -Destination $csdir -Recurse -Force
+Copy-Item "TextToImage-CSharp\README.md" -Destination $csdir -Force
 Write-Host "  - TextToImage-CSharp copied" -ForegroundColor Green
 
 # Copy TextToImage-CSharp-UI
 $csuidir = Join-Path $OUTPUT_DIR "TextToImage-CSharp-UI"
 if (-not (Test-Path $csuidir)) { New-Item -ItemType Directory -Path $csuidir | Out-Null }
 Copy-Item "TextToImage-CSharp-UI\publish\*" -Destination $csuidir -Recurse -Force
+Copy-Item "TextToImage-CSharp-UI\README.md" -Destination $csuidir -Force
+Copy-Item "TextToImage-CSharp-UI\SPEC.md" -Destination $csuidir -Force
 Write-Host "  - TextToImage-CSharp-UI copied" -ForegroundColor Green
 
 # Copy TextToImage-Go-EXE
 $goexedir = Join-Path $OUTPUT_DIR "TextToImage-Go-EXE"
 if (-not (Test-Path $goexedir)) { New-Item -ItemType Directory -Path $goexedir | Out-Null }
 Copy-Item "TextToImage-Go-EXE\publish\*" -Destination $goexedir -Recurse -Force
+Copy-Item "TextToImage-Go-EXE\README.md" -Destination $goexedir -Force
 Write-Host "  - TextToImage-Go-EXE copied" -ForegroundColor Green
 
 # Copy TextToImage-Go-WASM (only HTML, wasm and font are loaded from CDN)
 $wasmdir = Join-Path $OUTPUT_DIR "TextToImage-Go-WASM"
 if (-not (Test-Path $wasmdir)) { New-Item -ItemType Directory -Path $wasmdir | Out-Null }
 Get-ChildItem "TextToImage-Go-WASM\www" -Filter "*.html" | Copy-Item -Destination $wasmdir -Force
+Copy-Item "TextToImage-Go-WASM\README.md" -Destination $wasmdir -Force
 Write-Host "  - TextToImage-Go-WASM copied" -ForegroundColor Green
+
+# Copy TextToImage-HTML
+$htmlDest = Join-Path $OUTPUT_DIR "TextToImage-HTML"
+Copy-Item "TextToImage-HTML\README.md" -Destination $htmlDest -Force
+Write-Host "  - TextToImage-HTML copied" -ForegroundColor Green
+
+# Copy root README and SPEC to output
+Copy-Item "README.md" -Destination $OUTPUT_DIR -Force
+Copy-Item "SPEC.md" -Destination $OUTPUT_DIR -Force
+Write-Host "  - Root README and SPEC copied" -ForegroundColor Green
 
 Write-Host ""
 Write-Host "========================================" -ForegroundColor Green
