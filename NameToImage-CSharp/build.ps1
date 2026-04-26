@@ -39,10 +39,12 @@ for ($i = 0; $i -lt $retryCount; $i++) {
             Remove-Item -Recurse -Force "bin" -ErrorAction Stop
         }
         break
-    } catch {
+    }
+    catch {
         if ($i -lt ($retryCount - 1)) {
             Start-Sleep -Milliseconds 500
-        } else {
+        }
+        else {
             Write-Host "[ERROR] Cannot clean output directory. Is the exe file still running?" -ForegroundColor Red
             exit 1
         }
@@ -52,7 +54,18 @@ for ($i = 0; $i -lt $retryCount; $i++) {
 # Build project (single file, requires .NET 8 runtime)
 Write-Host ""
 Write-Host "Building project (single file)..." -ForegroundColor Yellow
-dotnet publish NameToImage.csproj -c $CONFIG -p:PublishSingleFile=true -p:PublishTrimmed=true --self-contained false -p:DebugType=none -p:DebugSymbols=false -p:Version=$Version -p:AssemblyVersion=$Version -p:FileVersion=$Version -o ./$OUTPUT_DIR
+# dotnet publish NameToImage.csproj -c $CONFIG -p:PublishSingleFile=true -p:PublishTrimmed=true --self-contained false -p:DebugType=none -p:DebugSymbols=false -p:Version=$Version -p:AssemblyVersion=$Version -p:FileVersion=$Version -o ./$OUTPUT_DIR
+dotnet publish NameToImage.csproj `
+    -c $CONFIG `
+    -p:SelfContained=false `
+    -p:PublishSingleFile=true `
+    -p:IncludeNativeLibrariesForSelfExtract=true `
+    -p:DebugType=none `
+    -p:DebugSymbols=false `
+    -p:Version=$Version `
+    -p:AssemblyVersion=$Version `
+    -p:FileVersion=$Version `
+    -o ./$OUTPUT_DIR
 
 if ($LASTEXITCODE -ne 0) {
     Write-Host ""

@@ -299,15 +299,15 @@ public partial class Form1 : Form
         textBoxOutputDir = new TextBox
         {
             Location = new System.Drawing.Point(10, 22),
-            Size = new System.Drawing.Size(290, 23),
+            Size = new System.Drawing.Size(250, 23),
             Text = _outputDir
         };
 
         btnBrowseOutput = new Button
         {
             Text = "浏览",
-            Location = new System.Drawing.Point(305, 20),
-            Size = new System.Drawing.Size(75, 25)
+            Location = new System.Drawing.Point(265, 20),
+            Size = new System.Drawing.Size(65, 25)
         };
         btnBrowseOutput.Click += (s, e) =>
         {
@@ -321,8 +321,8 @@ public partial class Form1 : Form
         var btnClearOutput = new Button
         {
             Text = "清空输出",
-            Location = new System.Drawing.Point(385, 20),
-            Size = new System.Drawing.Size(75, 25)
+            Location = new System.Drawing.Point(335, 20),
+            Size = new System.Drawing.Size(65, 25)
         };
         btnClearOutput.Click += (s, e) =>
         {

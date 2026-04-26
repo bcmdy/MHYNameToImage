@@ -39,20 +39,32 @@ for ($i = 0; $i -lt $retryCount; $i++) {
             Remove-Item -Recurse -Force "bin" -ErrorAction Stop
         }
         break
-    } catch {
+    }
+    catch {
         if ($i -lt ($retryCount - 1)) {
             Start-Sleep -Milliseconds 500
-        } else {
+        }
+        else {
             Write-Host "[ERROR] Cannot clean output directory. Is the exe file still running?" -ForegroundColor Red
             exit 1
         }
     }
 }
 
-# Build project (requires .NET 8 runtime)
+# Build project (非单文件)
 Write-Host ""
-Write-Host "Building project..." -ForegroundColor Yellow
-dotnet publish NameToImage-CSharp-UI.csproj -c $CONFIG --self-contained false -p:DebugType=none -p:DebugSymbols=false -p:Version=$Version -p:AssemblyVersion=$Version -p:FileVersion=$Version -o ./$OUTPUT_DIR
+Write-Host "Building project (non-single file)..." -ForegroundColor Yellow
+dotnet publish NameToImage-CSharp-UI.csproj `
+    -c $CONFIG `
+    -p:SelfContained=false `
+    -p:PublishSingleFile=true `
+    -p:IncludeNativeLibrariesForSelfExtract=true `
+    -p:DebugType=none `
+    -p:DebugSymbols=false `
+    -p:Version=$Version `
+    -p:AssemblyVersion=$Version `
+    -p:FileVersion=$Version `
+    -o ./$OUTPUT_DIR
 
 if ($LASTEXITCODE -ne 0) {
     Write-Host ""
