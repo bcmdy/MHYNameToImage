@@ -1,4 +1,4 @@
-namespace NameToImage_UI;
+namespace TextToImage_UI;
 
 public partial class Form1 : Form
 {
@@ -45,13 +45,13 @@ public partial class Form1 : Form
 
     private void InitializeComponent()
     {
-        this.Text = $"NameToImage-CSharp-UI v{_version}";
+        this.Text = $"TextToImage-CSharp-UI v{_version}";
         this.Size = new System.Drawing.Size(900, 700);
         this.StartPosition = FormStartPosition.CenterScreen;
 
         var labelTitle = new Label
         {
-            Text = "账号名称转图片工具",
+            Text = "文字转图片工具",
             Font = new System.Drawing.Font("Microsoft YaHei UI", 14F, System.Drawing.FontStyle.Bold),
             Location = new System.Drawing.Point(20, 15),
             AutoSize = true
@@ -60,22 +60,22 @@ public partial class Form1 : Form
         // Single name input section
         var groupBoxSingle = new GroupBox
         {
-            Text = "单名称输入",
+            Text = "单文字输入",
             Location = new System.Drawing.Point(20, 50),
             Size = new System.Drawing.Size(420, 60)
         };
 
         var labelSingleName = new Label
         {
-            Text = "账号名称:",
+            Text = "文字:",
             Location = new System.Drawing.Point(10, 25),
             AutoSize = true
         };
 
         textBoxSingleName = new TextBox
         {
-            Location = new System.Drawing.Point(80, 22),
-            Size = new System.Drawing.Size(230, 23)
+            Location = new System.Drawing.Point(60, 22),
+            Size = new System.Drawing.Size(250, 23)
         };
 
         btnGenerateSingle = new Button
@@ -98,7 +98,7 @@ public partial class Form1 : Form
 
         var labelBatchNames = new Label
         {
-            Text = "多个名称(逗号或换行分隔):",
+            Text = "多个文字(逗号或换行分隔):",
             Location = new System.Drawing.Point(10, 20),
             AutoSize = true
         };
@@ -441,7 +441,7 @@ public partial class Form1 : Form
         var name = textBoxSingleName.Text.Trim();
         if (string.IsNullOrEmpty(name))
         {
-            MessageBox.Show("请输入账号名称", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            MessageBox.Show("请输入文字", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             return;
         }
 
@@ -453,7 +453,7 @@ public partial class Form1 : Form
         var namesText = textBoxBatchNames.Text.Trim();
         if (string.IsNullOrEmpty(namesText))
         {
-            MessageBox.Show("请输入账号名称", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            MessageBox.Show("请输入文字", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             return;
         }
 
@@ -465,7 +465,7 @@ public partial class Form1 : Form
 
         if (names.Count == 0)
         {
-            MessageBox.Show("请输入有效的账号名称", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            MessageBox.Show("请输入有效的文字", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             return;
         }
 
@@ -520,7 +520,7 @@ public partial class Form1 : Form
         }
     }
 
-    private void GenerateImages(string name)
+    private void GenerateImages(string text)
     {
         var outputDir = _outputDir;
 
@@ -537,10 +537,10 @@ public partial class Form1 : Form
         };
 
         var generator = new ImageGenerator(_fontPath, outputDir);
-        generator.GenerateImages(name, options);
+        generator.GenerateImages(text, options);
 
         labelStatus.Text = $"图片已保存到: {outputDir}";
-        AppendLog($"生成图片: {name}");
+        AppendLog($"生成图片: {text}");
         RefreshPreview(outputDir);
     }
 

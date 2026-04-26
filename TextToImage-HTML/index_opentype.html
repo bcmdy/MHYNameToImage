@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>原神ID生成图片</title>
+<title>文字转图片</title>
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
 body { font-family: 'Noto Sans SC', sans-serif; background: #f5f6f7; min-height: 100vh; padding: 20px; }
@@ -34,10 +34,10 @@ button:disabled { background: #ccc; cursor: not-allowed; }
 </head>
 <body>
 <div class="container">
-  <h1>原神ID生成图片</h1>
+  <h1>文字转图片</h1>
   <div class="input-group">
     <div class="input-row">
-      <input type="text" id="nameInput" placeholder="请输入游戏ID名称" maxlength="12" disabled>
+      <input type="text" id="nameInput" placeholder="请输入文字" maxlength="12" disabled>
       <button onclick="generate()" id="generateBtn" disabled>生成</button>
     </div>
     <div class="options">
@@ -56,7 +56,7 @@ button:disabled { background: #ccc; cursor: not-allowed; }
 
 <script src="https://cdn.jsdelivr.net/npm/opentype.js@1.3.4/dist/opentype.min.js"></script>
 <script>
-const fontUrl = 'https://fastly.jsdelivr.net/gh/bcmdy/MHYNameToImage@main/Resources/HYW.ttf';
+const fontUrl = 'https://fastly.jsdelivr.net/gh/bcmdy/MHYNameToImage@main/TextToImage-HTML/HYW.ttf';
 let font = null;
 let isReady = false;
 

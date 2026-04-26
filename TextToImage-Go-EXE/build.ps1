@@ -23,7 +23,7 @@ foreach ($path in $GoPathsToCheck) {
 $OUTPUT_DIR = "publish"
 
 Write-Host "========================================" -ForegroundColor Cyan
-Write-Host "NameToImage Go WASM Build Script" -ForegroundColor Cyan
+Write-Host "TextToImage Go EXE Build Script" -ForegroundColor Cyan
 Write-Host "========================================" -ForegroundColor Cyan
 Write-Host ""
 
@@ -32,6 +32,7 @@ Write-Host "Cleaning old files..." -ForegroundColor Yellow
 if (Test-Path $OUTPUT_DIR) {
     Remove-Item -Recurse -Force $OUTPUT_DIR
 }
+Remove-Item -Recurse -Force "bin" -ErrorAction SilentlyContinue
 Remove-Item -Force "go.sum" -ErrorAction SilentlyContinue
 
 # Create output directory
@@ -42,7 +43,7 @@ if (-not (Test-Path $OUTPUT_DIR)) {
 # Initialize go.mod if needed
 if (-not (Test-Path "go.mod")) {
     Write-Host "Initializing go.mod..." -ForegroundColor Yellow
-    go mod init name-to-image-wasm
+    go mod init name-to-image
 }
 
 # Download and tidy dependencies
@@ -51,34 +52,18 @@ Write-Host "Downloading and tidying dependencies..." -ForegroundColor Yellow
 go get golang.org/x/image@v0.18.0
 go mod tidy
 
-# Build for WASM
+# Build for Windows
 Write-Host ""
-Write-Host "Building for WebAssembly..." -ForegroundColor Yellow
-$env:GOOS = "js"
-$env:GOARCH = "wasm"
-go build -ldflags "-s -w" -trimpath -o "$OUTPUT_DIR/main.wasm" .
+Write-Host "Building for Windows..." -ForegroundColor Yellow
+go build -ldflags "-s -w" -trimpath -o "$OUTPUT_DIR/TextToImage.exe" .
 
 if ($LASTEXITCODE -ne 0) {
     Write-Host "[ERROR] Build failed!" -ForegroundColor Red
-    $env:GOOS = ""
-    $env:GOARCH = ""
     exit 1
 }
 
-# Reset GOOS/GOARCH
-$env:GOOS = ""
-$env:GOARCH = ""
-
 # Copy font file
 Copy-Item "HYW.ttf" -Destination $OUTPUT_DIR -Force
-
-# Copy to www
-$wwwDir = "www"
-if (-not (Test-Path $wwwDir)) {
-    New-Item -ItemType Directory -Path $wwwDir | Out-Null
-}
-Copy-Item "$OUTPUT_DIR/main.wasm" -Destination $wwwDir -Force
-Copy-Item "HYW.ttf" -Destination $wwwDir -Force
 
 Write-Host ""
 Write-Host "========================================" -ForegroundColor Green
@@ -93,7 +78,7 @@ Get-ChildItem $OUTPUT_DIR | ForEach-Object { Write-Host "  $($_.Name)" }
 # Package as zip
 Write-Host ""
 Write-Host "Packaging..." -ForegroundColor Yellow
-$zipName = "NameToImage-WASM-v$Version"
+$zipName = "TextToImage-v$Version"
 if (Test-Path $zipName) { Remove-Item -Recurse -Force $zipName }
 New-Item -ItemType Directory -Path $zipName | Out-Null
 Copy-Item "$OUTPUT_DIR/*" -Destination $zipName -Recurse

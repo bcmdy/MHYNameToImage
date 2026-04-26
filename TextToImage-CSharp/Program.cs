@@ -1,4 +1,4 @@
-using NameToImage;
+using TextToImage;
 
 var baseDir = AppDomain.CurrentDomain.BaseDirectory;
 var fontPath = Path.Combine(baseDir, "HYW.ttf");
@@ -19,9 +19,9 @@ for (int i = 0; i < args.Length; i++)
 // No argument - interactive mode
 if (string.IsNullOrEmpty(nameArg))
 {
-    Console.WriteLine("账号名称转图片工具");
+    Console.WriteLine("文字转图片工具");
     Console.WriteLine();
-    Console.Write("请输入账号名称: ");
+    Console.Write("请输入文字: ");
     nameArg = Console.ReadLine();
 
     if (string.IsNullOrWhiteSpace(nameArg))

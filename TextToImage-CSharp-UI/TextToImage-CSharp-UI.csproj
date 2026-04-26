@@ -7,7 +7,8 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWindowsForms>true</UseWindowsForms>
     <ApplicationIcon />
-    <StartupObject>NameToImage_UI.Program</StartupObject>
+    <AssemblyName>TextToImage</AssemblyName>
+    <StartupObject>TextToImage_UI.Program</StartupObject>
     <Version>1.0.0</Version>
     <AssemblyVersion>$(Version)</AssemblyVersion>
     <FileVersion>$(Version)</FileVersion>

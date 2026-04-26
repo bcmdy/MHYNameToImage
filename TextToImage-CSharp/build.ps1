@@ -11,7 +11,7 @@ $CONFIG = "Release"
 $OUTPUT_DIR = "publish"
 
 Write-Host "========================================" -ForegroundColor Cyan
-Write-Host "NameToImage Build Script v$Version" -ForegroundColor Cyan
+Write-Host "TextToImage Build Script v$Version" -ForegroundColor Cyan
 Write-Host "========================================" -ForegroundColor Cyan
 Write-Host ""
 
@@ -19,11 +19,11 @@ Write-Host ""
 Write-Host "Cleaning old files..." -ForegroundColor Yellow
 
 # Kill process if running
-$exePath = Join-Path $OUTPUT_DIR "NameToImage.exe"
+$exePath = Join-Path $OUTPUT_DIR "TextToImage.exe"
 if (Test-Path $exePath) {
-    $process = Get-Process -Name "NameToImage" -ErrorAction SilentlyContinue
+    $process = Get-Process -Name "TextToImage" -ErrorAction SilentlyContinue
     if ($process) {
-        Stop-Process -Name "NameToImage" -Force -ErrorAction SilentlyContinue
+        Stop-Process -Name "TextToImage" -Force -ErrorAction SilentlyContinue
         Start-Sleep -Milliseconds 500
     }
 }
@@ -55,7 +55,7 @@ for ($i = 0; $i -lt $retryCount; $i++) {
 Write-Host ""
 Write-Host "Building project (single file)..." -ForegroundColor Yellow
 # dotnet publish NameToImage.csproj -c $CONFIG -p:PublishSingleFile=true -p:PublishTrimmed=true --self-contained false -p:DebugType=none -p:DebugSymbols=false -p:Version=$Version -p:AssemblyVersion=$Version -p:FileVersion=$Version -o ./$OUTPUT_DIR
-dotnet publish NameToImage.csproj `
+dotnet publish TextToImage.csproj `
     -c $CONFIG `
     -p:SelfContained=false `
     -p:PublishSingleFile=true `
@@ -102,7 +102,7 @@ Copy-Item "SPEC.md" -Destination $OUTPUT_DIR -ErrorAction SilentlyContinue
 # Package as zip
 Write-Host ""
 Write-Host "Packaging..." -ForegroundColor Yellow
-$zipName = "NameToImage-v$Version"
+$zipName = "TextToImage-v$Version"
 if (Test-Path $zipName) { Remove-Item -Recurse -Force $zipName }
 New-Item -ItemType Directory -Path $zipName | Out-Null
 Copy-Item "$OUTPUT_DIR\*" -Destination $zipName -Recurse

@@ -5,7 +5,7 @@ using SixLabors.Fonts;
 using SixLabors.ImageSharp.Drawing.Processing;
 using Path = System.IO.Path;
 
-namespace NameToImage_UI;
+namespace TextToImage_UI;
 
 public class ImageGenerator
 {

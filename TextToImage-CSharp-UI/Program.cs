@@ -1,4 +1,4 @@
-namespace NameToImage_UI;
+namespace TextToImage_UI;
 
 static class Program
 {

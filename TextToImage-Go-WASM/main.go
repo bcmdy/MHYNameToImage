@@ -21,7 +21,7 @@ var (
 
 func main() {
 	js.Global().Set("wasmReady", true)
-	js.Global().Set("generateImage", js.FuncOf(generateImage))
+	js.Global().Set("generateTextImage", js.FuncOf(generateTextImage))
 	js.Global().Set("loadFont", js.FuncOf(loadFont))
 
 	<-make(chan struct{})
@@ -45,7 +45,7 @@ func loadFont(this js.Value, args []js.Value) any {
 	return map[string]any{"status": "loaded", "size": fontDataLen}
 }
 
-func generateImage(this js.Value, args []js.Value) any {
+func generateTextImage(this js.Value, args []js.Value) any {
 	name := args[0].String()
 	generateMark := false
 	if len(args) > 1 {

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>原神ID生成图片</title>
+    <title>文字转图片</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <style>
@@ -174,10 +174,10 @@
 </head>
 <body>
     <div class="container">
-        <h1>原神ID生成图片</h1>
+        <h1>文字转图片</h1>
         <div class="input-group">
             <div class="input-row">
-                <input type="text" id="nameInput" placeholder="请输入游戏ID名称" maxlength="12" disabled>
+                <input type="text" id="nameInput" placeholder="请输入文字" maxlength="20" disabled>
                 <button onclick="generate()" id="generateBtn" disabled>生成</button>
             </div>
             <div class="options">
@@ -216,16 +216,16 @@
     <script>
         const fontName = 'HYW';
         const fontUrls = [
-            'https://fastly.jsdelivr.net/gh/bcmdy/MHYNameToImage@main/NameToImage-HTML/HYW.ttf',
-            'https://gh.sevencdn.com/https://raw.githubusercontent.com/bcmdy/MHYNameToImage/main/NameToImage-HTML/HYW.ttf',
+            'https://fastly.jsdelivr.net/gh/bcmdy/MHYNameToImage@main/TextToImage-HTML/HYW.ttf',
+            'https://gh.sevencdn.com/https://raw.githubusercontent.com/bcmdy/MHYNameToImage/main/TextToImage-HTML/HYW.ttf',
             'https://github.com/bcmdy/MHYNameToImage/raw/refs/heads/main/NameToImage-HTML/HYW.ttf',
-            'https://wget.la/https://raw.githubusercontent.com/bcmdy/MHYNameToImage/main/NameToImage-HTML/HYW.ttf',
-            'https://hk.gh-proxy.org/https://raw.githubusercontent.com/bcmdy/MHYNameToImage/main/NameToImage-HTML/HYW.ttf',
-            'https://hub.glowp.xyz/https://raw.githubusercontent.com/bcmdy/MHYNameToImage/main/NameToImage-HTML/HYW.ttf',
-            'https://ghfast.top/https://raw.githubusercontent.com/bcmdy/MHYNameToImage/main/NameToImage-HTML/HYW.ttf',
-            'https://gh.catmak.name/https://raw.githubusercontent.com/bcmdy/MHYNameToImage/main/NameToImage-HTML/HYW.ttf',
-            'https://cdn.gh-proxy.org/https://raw.githubusercontent.com/bcmdy/MHYNameToImage/main/NameToImage-HTML/HYW.ttf',
-            'https://g.blfrp.cn/https://raw.githubusercontent.com/bcmdy/MHYNameToImage/main/NameToImage-HTML/HYW.ttf'
+            'https://wget.la/https://raw.githubusercontent.com/bcmdy/MHYNameToImage/main/TextToImage-HTML/HYW.ttf',
+            'https://hk.gh-proxy.org/https://raw.githubusercontent.com/bcmdy/MHYNameToImage/main/TextToImage-HTML/HYW.ttf',
+            'https://hub.glowp.xyz/https://raw.githubusercontent.com/bcmdy/MHYNameToImage/main/TextToImage-HTML/HYW.ttf',
+            'https://ghfast.top/https://raw.githubusercontent.com/bcmdy/MHYNameToImage/main/TextToImage-HTML/HYW.ttf',
+            'https://gh.catmak.name/https://raw.githubusercontent.com/bcmdy/MHYNameToImage/main/TextToImage-HTML/HYW.ttf',
+            'https://cdn.gh-proxy.org/https://raw.githubusercontent.com/bcmdy/MHYNameToImage/main/TextToImage-HTML/HYW.ttf',
+            'https://g.blfrp.cn/https://raw.githubusercontent.com/bcmdy/MHYNameToImage/main/TextToImage-HTML/HYW.ttf'
         ];
 
         let cachedFontData = null;
@@ -243,8 +243,8 @@
 
         // 直接从 CDN 加载字体，绕过 file:// 限制
         const fontCdnUrls = [
-            'https://fastly.jsdelivr.net/gh/bcmdy/MHYNameToImage@main/NameToImage-HTML/HYW.ttf',
-            'https://ghfast.top/https://raw.githubusercontent.com/bcmdy/MHYNameToImage/main/NameToImage-HTML/HYW.ttf'
+            'https://fastly.jsdelivr.net/gh/bcmdy/MHYNameToImage@main/TextToImage-HTML/HYW.ttf',
+            'https://ghfast.top/https://raw.githubusercontent.com/bcmdy/MHYNameToImage/main/TextToImage-HTML/HYW.ttf'
         ];
 
         function loadFontFromCdn() {

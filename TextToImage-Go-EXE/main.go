@@ -16,26 +16,26 @@ import (
 )
 
 func main() {
-	name := flag.String("name", "", "账号名称")
+	name := flag.String("name", "", "文字")
 	mark := flag.Bool("mark", false, "生成备注版")
 	flag.Parse()
 
 	if *name == "" {
-		fmt.Print("请输入账号名称: ")
+		fmt.Print("请输入文字: ")
 		fmt.Scan(name)
 	}
 
 	if *name == "" {
-		log.Fatal("账号名称不能为空")
+		log.Fatal("文字不能为空")
 	}
 
-	err := NameToImage(*name)
+	err := GenerateTextImage(*name)
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	if *mark {
-		err = NameToImageMark(*name)
+		err = GenerateTextImageMark(*name)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -44,7 +44,7 @@ func main() {
 	fmt.Println("完成！")
 }
 
-func NameToImage(name string) error {
+func GenerateTextImage(text string) error {
 	fontBytes, err := os.ReadFile("HYW.ttf")
 	if err != nil {
 		return err
@@ -76,7 +76,7 @@ func NameToImage(name string) error {
 		Src:  image.NewUniform(color.RGBA{80, 87, 105, 255}),
 		Face: face,
 	}
-	textWidth := d.MeasureString(name).Round()
+	textWidth := d.MeasureString(text).Round()
 
 	paddingX := 3
 	width := textWidth + paddingX
@@ -89,9 +89,9 @@ func NameToImage(name string) error {
 	d.Dst = img
 	y := (height + int(fontSize)) / 2 - 4
 	d.Dot = fixed.P(paddingX, y)
-	d.DrawString(name)
+	d.DrawString(text)
 
-	outFile, err := os.Create(name + ".png")
+	outFile, err := os.Create(text + ".png")
 	if err != nil {
 		return err
 	}
@@ -101,11 +101,11 @@ func NameToImage(name string) error {
 		return err
 	}
 
-	fmt.Printf("图片已保存到: %s\n", name+".png")
+	fmt.Printf("图片已保存到: %s\n", text+".png")
 	return nil
 }
 
-func NameToImageMark(name string) error {
+func GenerateTextImageMark(text string) error {
 	fontBytes, err := os.ReadFile("HYW.ttf")
 	if err != nil {
 		return err
@@ -137,7 +137,7 @@ func NameToImageMark(name string) error {
 		Src:  image.NewUniform(color.RGBA{100, 119, 171, 255}),
 		Face: face,
 	}
-	textWidth := d.MeasureString(name).Round()
+	textWidth := d.MeasureString(text).Round()
 
 	paddingX := 3
 	width := textWidth + paddingX
@@ -150,9 +150,9 @@ func NameToImageMark(name string) error {
 	d.Dst = img
 	y := (height + int(fontSize)) / 2 - 4
 	d.Dot = fixed.P(paddingX, y)
-	d.DrawString(name)
+	d.DrawString(text)
 
-	outFile, err := os.Create(name + "备注.png")
+	outFile, err := os.Create(text + "备注.png")
 	if err != nil {
 		return err
 	}
@@ -162,6 +162,6 @@ func NameToImageMark(name string) error {
 		return err
 	}
 
-	fmt.Printf("图片已保存到: %s\n", name+"备注.png")
+	fmt.Printf("图片已保存到: %s\n", text+"备注.png")
 	return nil
 }

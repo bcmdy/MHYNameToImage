@@ -11,7 +11,7 @@ $CONFIG = "Release"
 $OUTPUT_DIR = "publish"
 
 Write-Host "========================================" -ForegroundColor Cyan
-Write-Host "NameToImage-CSharp-UI Build Script v$Version" -ForegroundColor Cyan
+Write-Host "TextToImage-CSharp-UI Build Script v$Version" -ForegroundColor Cyan
 Write-Host "========================================" -ForegroundColor Cyan
 Write-Host ""
 
@@ -19,11 +19,11 @@ Write-Host ""
 Write-Host "Cleaning old files..." -ForegroundColor Yellow
 
 # Kill process if running
-$exePath = Join-Path $OUTPUT_DIR "NameToImage-CSharp-UI.exe"
+$exePath = Join-Path $OUTPUT_DIR "TextToImage.exe"
 if (Test-Path $exePath) {
-    $process = Get-Process -Name "NameToImage-CSharp-UI" -ErrorAction SilentlyContinue
+    $process = Get-Process -Name "TextToImage" -ErrorAction SilentlyContinue
     if ($process) {
-        Stop-Process -Name "NameToImage-CSharp-UI" -Force -ErrorAction SilentlyContinue
+        Stop-Process -Name "TextToImage" -Force -ErrorAction SilentlyContinue
         Start-Sleep -Milliseconds 500
     }
 }
@@ -54,7 +54,7 @@ for ($i = 0; $i -lt $retryCount; $i++) {
 # Build project (非单文件)
 Write-Host ""
 Write-Host "Building project (non-single file)..." -ForegroundColor Yellow
-dotnet publish NameToImage-CSharp-UI.csproj `
+dotnet publish TextToImage-CSharp-UI.csproj `
     -c $CONFIG `
     -p:SelfContained=false `
     -p:PublishSingleFile=true `
@@ -96,7 +96,7 @@ Copy-Item "README.md" -Destination $OUTPUT_DIR -ErrorAction SilentlyContinue
 # Package as zip
 Write-Host ""
 Write-Host "Packaging..." -ForegroundColor Yellow
-$zipName = "NameToImage-CSharp-UI-v$Version"
+$zipName = "TextToImage-CSharp-UI-v$Version"
 if (Test-Path $zipName) { Remove-Item -Recurse -Force $zipName }
 New-Item -ItemType Directory -Path $zipName | Out-Null
 Copy-Item "$OUTPUT_DIR\*" -Destination $zipName -Recurse

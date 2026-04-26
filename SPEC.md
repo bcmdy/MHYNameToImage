@@ -1,11 +1,11 @@
-# NameToImage - 需求文档
+# TextToImage - 需求文档
 
 ## 1. 项目概述
 
-- **项目名称**：NameToImage（原神账号名称转图片工具）
+- **项目名称**：TextToImage（文字转图片工具）
 - **项目类型**：多语言实现的图片生成工具
-- **核心功能**：将游戏账号名称转换为与游戏风格一致的 PNG 图片
-- **目标用户**：原神玩家、需要生成游戏内角色名称图片的用户
+- **核心功能**：将文字转换为 PNG 图片
+- **目标用户**：需要生成文字图片的用户
 
 ## 2. 功能需求
 
@@ -42,19 +42,19 @@
 
 | 版本 | 技术栈 | 适用场景 |
 |------|--------|---------|
-| NameToImage-CSharp | .NET 8.0 / C# / SixLabors.ImageSharp | Windows 命令行工具 |
-| NameToImage-Go-EXE | Go / golang.org/x/image | 命令行工具 |
-| NameToImage-Go-WASM | Go / WebAssembly / golang.org/x/image | 浏览器 Web 应用 |
-| NameToImage-HTML | HTML5 / JavaScript / Canvas API + opentype.js | 在线工具 |
+| TextToImage-CSharp | .NET 8.0 / C# / SixLabors.ImageSharp | Windows 命令行工具 |
+| TextToImage-Go-EXE | Go / golang.org/x/image | 命令行工具 |
+| TextToImage-Go-WASM | Go / WebAssembly / golang.org/x/image | 浏览器 Web 应用 |
+| TextToImage-HTML | HTML5 / JavaScript / Canvas API + opentype.js | 在线工具 |
 
 ### 3.2 项目结构
 
 ```
 MHYNameToImage/
-├── NameToImage-CSharp/     # C# 版
-├── NameToImage-Go-EXE/    # Go 版（命令行）
-├── NameToImage-Go-WASM/   # Go 版（WebAssembly）
-├── NameToImage-HTML/      # HTML 版
+├── TextToImage-CSharp/     # C# 版
+├── TextToImage-Go-EXE/    # Go 版（命令行）
+├── TextToImage-Go-WASM/   # Go 版（WebAssembly）
+├── TextToImage-HTML/      # HTML 版
 ├── README.md
 └── SPEC.md
 ```
@@ -64,7 +64,7 @@ MHYNameToImage/
 ### 4.1 功能验收
 
 - [x] 各版本能正常启动运行
-- [x] 输入名称后能正确生成 PNG 图片
+- [x] 输入文字后能正确生成 PNG 图片
 - [x] 图片文字颜色符合规格
 - [x] 图片背景色为 RGB(245,246,247)
 - [x] 图片宽度能根据文字长度自适应
@@ -79,25 +79,25 @@ MHYNameToImage/
 
 ## 5. 版本差异
 
-### 5.1 NameToImage-CSharp
+### 5.1 TextToImage-CSharp
 
 - 支持交互模式和命令行模式
-- 命令行参数：`NameToImage.exe 账号名 [-m]`
+- 命令行参数：`TextToImage.exe 文字 [-m]`
 - 输出文件到可执行文件同目录
 
-### 5.2 NameToImage-Go-EXE
+### 5.2 TextToImage-Go-EXE
 
-- 命令行参数：`-name 账号名 [-mark]`
+- 命令行参数：`-name 文字 [-mark]`
 - 支持交互模式
 - 输出文件到当前目录
 
-### 5.3 NameToImage-Go-WASM
+### 5.3 TextToImage-Go-WASM
 
 - 通过 JavaScript 调用生成图片
 - 返回 Base64 编码的图片数据
 - 支持在浏览器环境中运行
 
-### 5.4 NameToImage-HTML
+### 5.4 TextToImage-HTML
 
 - 纯前端实现，无需服务器
 - 提供 Web UI 界面
