@@ -105,7 +105,6 @@ if (-not (Test-Path $htmlDest)) {
     New-Item -ItemType Directory -Path $htmlDest | Out-Null
 }
 Copy-Item "$htmlDir\index_*.html" -Destination $htmlDest
-Copy-Item "$htmlDir\HYW.ttf" -Destination $htmlDest
 Write-Host "Done" -ForegroundColor Green
 
 # Copy all publish folders to root
@@ -131,13 +130,12 @@ if (-not (Test-Path $goexedir)) { New-Item -ItemType Directory -Path $goexedir |
 Copy-Item "TextToImage-Go-EXE\publish\*" -Destination $goexedir -Recurse -Force
 Write-Host "  - TextToImage-Go-EXE copied" -ForegroundColor Green
 
-# Copy TextToImage-Go-WASM
+# Copy TextToImage-Go-WASM (only www folder, wasm and font are loaded from CDN)
 $wasmdir = Join-Path $OUTPUT_DIR "TextToImage-Go-WASM"
 if (-not (Test-Path $wasmdir)) { New-Item -ItemType Directory -Path $wasmdir | Out-Null }
 $wasmdestwww = Join-Path $wasmdir "www"
 if (-not (Test-Path $wasmdestwww)) { New-Item -ItemType Directory -Path $wasmdestwww | Out-Null }
-Copy-Item "TextToImage-Go-WASM\publish\*" -Destination $wasmdir -Recurse -Force
-Copy-Item "TextToImage-Go-WASM\www\*" -Destination $wasmdestwww -Recurse -Force
+Get-ChildItem "TextToImage-Go-WASM\www" -Filter "*.html" | Copy-Item -Destination $wasmdestwww -Force
 Write-Host "  - TextToImage-Go-WASM copied" -ForegroundColor Green
 
 Write-Host ""
