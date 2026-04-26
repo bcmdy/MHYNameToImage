@@ -43,6 +43,7 @@
 | 版本 | 技术栈 | 适用场景 |
 |------|--------|---------|
 | TextToImage-CSharp | .NET 8.0 / C# / SixLabors.ImageSharp | Windows 命令行工具 |
+| TextToImage-CSharp-UI | .NET 8.0 / C# / WinForms / SixLabors.ImageSharp | Windows 图形界面工具 |
 | TextToImage-Go-EXE | Go / golang.org/x/image | 命令行工具 |
 | TextToImage-Go-WASM | Go / WebAssembly / golang.org/x/image | 浏览器 Web 应用 |
 | TextToImage-HTML | HTML5 / JavaScript / Canvas API + opentype.js | 在线工具 |
@@ -51,10 +52,34 @@
 
 ```
 MHYNameToImage/
-├── TextToImage-CSharp/     # C# 版
-├── TextToImage-Go-EXE/    # Go 版（命令行）
-├── TextToImage-Go-WASM/   # Go 版（WebAssembly）
-├── TextToImage-HTML/      # HTML 版
+├── TextToImage-CSharp/      # C# 版命令行工具
+│   ├── Program.cs
+│   ├── ImageGenerator.cs
+│   ├── TextToImage.csproj
+│   ├── build.ps1
+│   └── Resources/HYW.ttf
+├── TextToImage-CSharp-UI/   # C# 版图形界面工具
+│   ├── Program.cs
+│   ├── Form1.cs
+│   ├── ImageGenerator.cs
+│   ├── TextToImage-CSharp-UI.csproj
+│   ├── build.ps1
+│   └── Resources/HYW.ttf
+├── TextToImage-Go-EXE/       # Go 版命令行工具
+│   ├── main.go
+│   ├── go.mod
+│   ├── build.ps1
+│   └── HYW.ttf
+├── TextToImage-Go-WASM/       # Go 版 WebAssembly
+│   ├── main.go
+│   ├── go.mod
+│   ├── build.ps1
+│   ├── www/
+│   └── HYW.ttf
+├── TextToImage-HTML/         # HTML 版在线工具
+│   ├── index_canvas.html
+│   ├── index_opentype.html
+│   └── HYW.ttf
 ├── README.md
 └── SPEC.md
 ```
@@ -85,19 +110,31 @@ MHYNameToImage/
 - 命令行参数：`TextToImage.exe 文字 [-m]`
 - 输出文件到可执行文件同目录
 
-### 5.2 TextToImage-Go-EXE
+### 5.2 TextToImage-CSharp-UI
+
+- 图形界面，操作便捷
+- 单文字输入和批量处理
+- 支持 CSV/TXT 导入
+- 自定义普通版和备注版文字颜色
+- 自定义背景颜色
+- 图片预览和日志记录
+- 固定导出到程序目录下的 output 文件夹
+- 支持打开输出目录
+- 支持清空输出目录
+
+### 5.3 TextToImage-Go-EXE
 
 - 命令行参数：`-name 文字 [-mark]`
 - 支持交互模式
 - 输出文件到当前目录
 
-### 5.3 TextToImage-Go-WASM
+### 5.4 TextToImage-Go-WASM
 
 - 通过 JavaScript 调用生成图片
 - 返回 Base64 编码的图片数据
 - 支持在浏览器环境中运行
 
-### 5.4 TextToImage-HTML
+### 5.5 TextToImage-HTML
 
 - 纯前端实现，无需服务器
 - 提供 Web UI 界面

@@ -14,6 +14,12 @@
 
 技术栈：.NET 8.0 | C# | SixLabors.ImageSharp
 
+### TextToImage-CSharp-UI（图形界面工具）
+
+基于 WinForms 的桌面应用，提供图形界面，支持批量处理和颜色自定义。
+
+技术栈：.NET 8.0 | C# | WinForms | SixLabors.ImageSharp
+
 ### TextToImage-Go-EXE（命令行工具）
 
 基于 Go 语言开发的命令行工具，可编译为原生可执行文件。适合跨平台使用或集成到其他 Go 项目中。
@@ -44,14 +50,51 @@
 | 图片宽度 | 自适应 | 自适应 |
 | 字体 | 华文行楷 24px | 华文行楷 24px |
 
+## 版本差异
+
+### TextToImage-CSharp
+
+- 支持交互模式和命令行模式
+- 命令行参数：`TextToImage.exe 文字 [-m]`
+- 输出文件到可执行文件同目录
+
+### TextToImage-CSharp-UI
+
+- 图形界面，操作便捷
+- 支持单文字输入和批量处理
+- 支持 CSV/TXT 导入
+- 自定义普通版和备注版文字颜色
+- 自定义背景颜色
+- 图片预览和日志记录
+- 固定导出到程序目录下的 output 文件夹
+
+### TextToImage-Go-EXE
+
+- 命令行参数：`-name 文字 [-mark]`
+- 支持交互模式
+- 输出文件到当前目录
+
+### TextToImage-Go-WASM
+
+- 通过 JavaScript 调用生成图片
+- 返回 Base64 编码的图片数据
+- 支持在浏览器环境中运行
+
+### TextToImage-HTML
+
+- 纯前端实现，无需服务器
+- 提供 Web UI 界面
+- 支持图片预览和下载
+
 ## 目录结构
 
 ```
 MHYNameToImage/
-├── TextToImage-CSharp/     # C# 版 (.NET 8.0)
-├── TextToImage-Go-EXE/     # Go 版（命令行）
-├── TextToImage-Go-WASM/    # Go 版（WebAssembly）
-├── TextToImage-HTML/       # HTML 版
+├── TextToImage-CSharp/      # C# 版命令行工具 (.NET 8.0)
+├── TextToImage-CSharp-UI/   # C# 版图形界面工具
+├── TextToImage-Go-EXE/      # Go 版命令行工具
+├── TextToImage-Go-WASM/      # Go 版 WebAssembly
+├── TextToImage-HTML/        # HTML 版在线工具
 ├── README.md
 └── SPEC.md
 ```
@@ -62,6 +105,12 @@ MHYNameToImage/
 
 ```powershell
 .\TextToImage-CSharp\build.ps1
+```
+
+### C#-UI 版
+
+```powershell
+.\TextToImage-CSharp-UI\build.ps1
 ```
 
 ### Go EXE 版
@@ -79,3 +128,13 @@ MHYNameToImage/
 ### HTML 版
 
 无需编译，直接在浏览器中打开 index.html 即可。
+
+## 系统要求
+
+| 版本 | 系统要求 |
+|------|----------|
+| TextToImage-CSharp | Windows + .NET 8 Desktop Runtime |
+| TextToImage-CSharp-UI | Windows 10/11 + .NET 8 Desktop Runtime |
+| TextToImage-Go-EXE | Windows（编译后） |
+| TextToImage-Go-WASM | 现代浏览器 |
+| TextToImage-HTML | 现代浏览器 |
